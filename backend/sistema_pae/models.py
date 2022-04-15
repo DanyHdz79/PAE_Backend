@@ -37,9 +37,9 @@ class Subject(models.Model):
     class Meta:
         unique_together = (('id', 'id_career'),)
 
-    id = models.CharField(max_length=10, primary_key=True)
+    id_subject = models.CharField(max_length=10)
     name = models.CharField(max_length=100)
-    id_career = models.ForeignKey(Career, on_delete=models.RESTRICT, primary_key=True)
+    id_career = models.ForeignKey(Career, on_delete=models.RESTRICT)
     semester = models.IntegerField()
     tutors = models.ManyToManyField(User)
 
@@ -64,8 +64,8 @@ class Question(models.Model):
 
 class Answer(models.Model):
     id_question = models.ForeignKey(Question, on_delete=models.CASCADE)
-    id_student = models.ForeignKey(User, on_delete=models.SET_NULL)
-    id_tutor = models.ForeignKey(User, on_delete=models.SET_NULL)
+    id_student = models.ForeignKey(User, null=True, on_delete=models.SET_NULL, related_name='student_answer')
+    id_tutor = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
     date = models.DateTimeField()
     answer = models.JSONField()
 
@@ -73,17 +73,17 @@ class Answer(models.Model):
         return self.id_question, self.id_student, self.id_tutor, self.date, self.answer
 
 class Session(models.Model):
-    id_subject = models.ForeignKey(Subject, on_delete=models.SET_NULL)
+    id_subject = models.ForeignKey(Subject, null=True, on_delete=models.SET_NULL)
     description = models.TextField()
     date = models.DateTimeField()
-    id_tutor = models.ForeignKey(User, on_delete=models.SET_NULL)
-    id_student = models.ForeignKey(User, on_delete=models.SET_NULL)
-    file = models.FileField()
+    id_tutor = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
+    id_student = models.ForeignKey(User, null=True, on_delete=models.SET_NULL, related_name='session_student')
+    file = models.FileField(null=True)
     status = models.IntegerField()
-    spot = models.CharField(max_length=50)
+    spot = models.CharField(max_length=50, null=True)
     request_time = models.DateTimeField()
-    verify_time = models.DateTimeField()
-    id_admin_verify = models.ForeignKey(Admin, on_delete=models.SET_NULL)
+    verify_time = models.DateTimeField(null=True)
+    id_admin_verify = models.ForeignKey(Admin, null=True, on_delete=models.SET_NULL)
 
     def __str__(self):
         return self.id_subject, self.description, self.date, self.id_tutor, self.id_subject, self.file, self.status, self.spot, self.request_time, self.verify_time, self.id_admin_verify
