@@ -7,14 +7,14 @@ class Admin(models.Model):
     password = models.CharField(max_length=256) #ecrypt password
 
     def __str__(self):
-        return self.id, self.name
+        return self.id + ' ' + self.name
 
 class Career(models.Model):
     id = models.CharField(max_length=5, primary_key=True)
     name = models.CharField(max_length=100)
 
     def __str__(self):
-        return self.id, self.name
+        return self.id
 
 class Survey(models.Model):
     creation_date = models.DateTimeField()
@@ -31,7 +31,7 @@ class User(models.Model):
     status = models.IntegerField()
 
     def __str__(self):
-        return self.id, self.email, self.name, self.semester, self.career, self.user_type, self.status
+        return self.id + ' - ' + str(self.user_type)
 
 class Subject(models.Model):
     class Meta:
@@ -41,10 +41,10 @@ class Subject(models.Model):
     name = models.CharField(max_length=100)
     id_career = models.ForeignKey(Career, on_delete=models.RESTRICT)
     semester = models.IntegerField()
-    tutors = models.ManyToManyField(User)
+    tutors = models.ManyToManyField(User, blank=True)
 
     def __str__(self):
-        return self.id, self.name, self.id_career, self.semester
+        return self.id_subject + ' - ' + self.name + ' - ' + str(self.id_career)
 
 
 class Schedule(models.Model):
@@ -52,7 +52,7 @@ class Schedule(models.Model):
     day_hour = models.CharField(max_length=4)
 
     def __str__(self):
-        return self.id_user, self.day_hour
+        return self.id_user + ' ' + self.day_hour
 
 class Question(models.Model):
     id_survey = models.ForeignKey(Survey, on_delete=models.CASCADE)
@@ -60,7 +60,7 @@ class Question(models.Model):
     question_type = models.IntegerField()
 
     def __str__(self):
-        return self.id_survey, self.question, self.question_type
+        return self.id_survey + ' - ' + self.question + ' - ' +self.question_type
 
 class Answer(models.Model):
     id_question = models.ForeignKey(Question, on_delete=models.CASCADE)
@@ -70,7 +70,7 @@ class Answer(models.Model):
     answer = models.JSONField()
 
     def __str__(self):
-        return self.id_question, self.id_student, self.id_tutor, self.date, self.answer
+        return self.id_question + ' - ' + self.id_student + ' - ' + self.id_tutor + ' - ' + self.date + ' ' + self.answer
 
 class Session(models.Model):
     id_subject = models.ForeignKey(Subject, null=True, on_delete=models.SET_NULL)
@@ -86,7 +86,7 @@ class Session(models.Model):
     id_admin_verify = models.ForeignKey(Admin, null=True, on_delete=models.SET_NULL)
 
     def __str__(self):
-        return self.id_subject, self.description, self.date, self.id_tutor, self.id_subject, self.file, self.status, self.spot, self.request_time, self.verify_time, self.id_admin_verify
+        return self.id_subject + ' - ' + self.date + ' - ' + self.id_tutor + ' - ' + self.id_student + ' - ' + self.status
 
 
 
