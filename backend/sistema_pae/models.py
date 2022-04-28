@@ -22,16 +22,16 @@ class Survey(models.Model):
     survey_type = models.IntegerField()
 
 class PaeUser(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    id = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
 
-    id = models.CharField(max_length=10, primary_key=True)
+    #id = models.CharField(max_length=10, primary_key=True)
     semester = models.IntegerField()
     career = models.ForeignKey(Career, on_delete=models.RESTRICT)
     user_type = models.IntegerField()
     status = models.IntegerField()
 
     def __str__(self):
-        return self.id
+        return str(self.id)
 
 class Subject(models.Model):
 
@@ -39,10 +39,16 @@ class Subject(models.Model):
     name = models.CharField(max_length=100)
     id_career = models.ManyToManyField(Career, blank=True)
     semester = models.IntegerField()
-    tutors = models.ManyToManyField(PaeUser, blank=True)
 
     def __str__(self):
         return self.id_subject
+
+class TutorSubject(models.Model):
+    id_tutor = models.ForeignKey(PaeUser, on_delete=models.CASCADE)
+    id_subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return str(self.id_tutor) + ' - ' + str(self.id_subject)
 
 
 class Schedule(models.Model):
@@ -50,7 +56,7 @@ class Schedule(models.Model):
     day_hour = models.CharField(max_length=4)
 
     def __str__(self):
-        return self.id_user + ' ' + self.day_hour
+        return str(self.id_user) + ' ' + self.day_hour
 
 class Question(models.Model):
     id_survey = models.ForeignKey(Survey, on_delete=models.CASCADE)
