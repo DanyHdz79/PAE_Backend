@@ -1,5 +1,5 @@
 from rest_framework.viewsets import ModelViewSet
-from .models import Admin, Career, Survey, User, Question, Subject, Session, Schedule, Answer
+from .models import Admin, Career, Survey, PaeUser, Question, Subject, Session, Schedule, Answer
 from .serializers import AdminSerializer, CareerSerializer, SurveySerializer, UserSerializer, QuestionSerializer, SubjectSerializer, SessionSerializer, ScheduleSerializer, AnswerSerializer
 
 # Create your views here.
@@ -16,7 +16,7 @@ class SurveysViewSet(ModelViewSet):
     serializer_class = SurveySerializer
 
 class UsersViewSet(ModelViewSet):
-    queryset = User.objects.all()
+    queryset = PaeUser.objects.all()
     serializer_class = UserSerializer
 
 class QuestionsViewSet(ModelViewSet):

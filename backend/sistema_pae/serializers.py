@@ -1,6 +1,6 @@
 from dataclasses import field
 from rest_framework.serializers import ModelSerializer, ALL_FIELDS
-from .models import Admin, Career, Survey, User, Question, Subject, Session, Schedule, Answer
+from .models import Admin, Career, Survey, PaeUser, Question, Subject, Session, Schedule, Answer
 
 class AdminSerializer(ModelSerializer):
     class Meta:
@@ -19,7 +19,7 @@ class SurveySerializer(ModelSerializer):
 
 class UserSerializer(ModelSerializer):
     class Meta:
-        model = User
+        model = PaeUser
         fields = ALL_FIELDS
 
 class QuestionSerializer(ModelSerializer):
