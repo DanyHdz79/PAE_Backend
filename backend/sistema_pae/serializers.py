@@ -1,13 +1,13 @@
 from dataclasses import field
 from django.contrib.auth.models import User
 from rest_framework.serializers import ModelSerializer, ALL_FIELDS
-from .models import Admin, Career, Survey, PaeUser, Question, Subject, Session, Schedule, Answer, TutorSubject
+from .models import Career, Survey, PaeUser, Question, Subject, Session, Schedule, Answer, TutorSubject
 from rest_framework.authtoken.models import Token
 
-class AdminSerializer(ModelSerializer):
+""" class AdminSerializer(ModelSerializer):
     class Meta:
         model = Admin
-        fields = ALL_FIELDS
+        fields = ALL_FIELDS """
 
 class CareerSerializer(ModelSerializer):
     class Meta:

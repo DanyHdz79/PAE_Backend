@@ -1,14 +1,15 @@
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from django.contrib.auth.models import User
-from .models import Admin, Career, Survey, PaeUser, Question, Subject, Session, Schedule, Answer, TutorSubject
-from .serializers import AdminSerializer, CareerSerializer, SurveySerializer, UserSerializer, PaeUserSerializer, QuestionSerializer, SubjectSerializer, SessionSerializer, ScheduleSerializer, AnswerSerializer, TutorSubjectSerializer
+from .models import Career, Survey, PaeUser, Question, Subject, Session, Schedule, Answer, TutorSubject
+from .serializers import CareerSerializer, SurveySerializer, UserSerializer, PaeUserSerializer, QuestionSerializer, SubjectSerializer, SessionSerializer, ScheduleSerializer, AnswerSerializer, TutorSubjectSerializer
 
-# Create your views here.
-class AdminsViewSet(ModelViewSet):
+# SELECT * queries
+
+""" class AdminsViewSet(ModelViewSet):
     queryset = Admin.objects.all()
     serializer_class = AdminSerializer
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (IsAuthenticated, ) """
 
 class CareersViewSet(ModelViewSet):
     queryset = Career.objects.all()
@@ -42,7 +43,7 @@ class SubjectsViewSet(ModelViewSet):
 
 class TutorSubjectsViewSet(ModelViewSet):
     queryset = TutorSubject.objects.all()
-    serializer_class = SubjectSerializer
+    serializer_class = TutorSubjectSerializer
     permission_classes = (IsAuthenticated, )
 
 class SessionsViewSet(ModelViewSet):
@@ -58,4 +59,16 @@ class SchedulesViewSet(ModelViewSet):
 class AnswersViewSet(ModelViewSet):
     queryset = Answer.objects.all()
     serializer_class = AnswerSerializer
+    permission_classes = (IsAuthenticated, )
+
+
+# Specific queries
+
+class AvailableSessionsViewSet(ModelViewSet):
+    sub = 'MA1033'
+    queryset = TutorSubject.objects.all()
+    #innerqs = TutorSubject.objects.get(id_subject=sub)
+    serializer_class = TutorSubjectSerializer
+    #queryset = Schedule.objects.filter(id_user__in=TutorSubject.objects.filter(id_subject=1))
+    #serializer_class = ScheduleSerializer
     permission_classes = (IsAuthenticated, )

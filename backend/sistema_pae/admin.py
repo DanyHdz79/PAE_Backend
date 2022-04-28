@@ -1,8 +1,8 @@
 from django.contrib import admin
-from .models import Admin, Career, Survey, PaeUser, Question, Subject, Session, Schedule, Answer, TutorSubject
+from .models import Career, Survey, PaeUser, Question, Subject, Session, Schedule, Answer, TutorSubject
 
 # Register your models here.
-admin.site.register(Admin)
+# admin.site.register(Admin)
 admin.site.register(Career)
 admin.site.register(Survey)
 admin.site.register(PaeUser)
