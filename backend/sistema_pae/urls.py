@@ -14,7 +14,6 @@ router.register('tutor_subjects', TutorSubjectsViewSet)
 router.register('sessions', SessionsViewSet)
 router.register('schedules', SchedulesViewSet)
 router.register('answers', AnswersViewSet)
-
-router.register('available_sessions', AvailableSessionsViewSet)
+router.register('available_sessions', AvailableSessionsViewSet, basename='available_sessions')
 
 urlpatterns = router.urls

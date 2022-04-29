@@ -1,8 +1,9 @@
-from rest_framework.viewsets import ModelViewSet
+from rest_framework.viewsets import ModelViewSet, ViewSet
 from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.response import Response
 from django.contrib.auth.models import User
 from .models import Career, Survey, PaeUser, Question, Subject, Session, Schedule, Answer, TutorSubject
-from .serializers import CareerSerializer, SurveySerializer, UserSerializer, PaeUserSerializer, QuestionSerializer, SubjectSerializer, SessionSerializer, ScheduleSerializer, AnswerSerializer, TutorSubjectSerializer
+from .serializers import CareerSerializer, SurveySerializer, UserSerializer, PaeUserSerializer, QuestionSerializer, SubjectSerializer, SessionSerializer, ScheduleSerializer, AnswerSerializer, TutorSubjectSerializer, SessionAvailabilitySerializer
 
 # SELECT * queries
 
@@ -64,11 +65,10 @@ class AnswersViewSet(ModelViewSet):
 
 # Specific queries
 
-class AvailableSessionsViewSet(ModelViewSet):
+class AvailableSessionsViewSet(ViewSet):
     sub = 'MA1033'
-    queryset = TutorSubject.objects.all()
-    #innerqs = TutorSubject.objects.get(id_subject=sub)
-    serializer_class = TutorSubjectSerializer
-    #queryset = Schedule.objects.filter(id_user__in=TutorSubject.objects.filter(id_subject=1))
-    #serializer_class = ScheduleSerializer
-    permission_classes = (IsAuthenticated, )
+    def list(self, request):
+        queryset = TutorSubject.objects.filter(id_subject = self.sub).values('id_tutor__schedule__day_hour')
+        serializer = SessionAvailabilitySerializer(queryset, many=True)
+        return Response(serializer.data)
+   
