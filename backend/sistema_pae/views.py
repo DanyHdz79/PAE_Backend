@@ -69,7 +69,7 @@ class AvailableSessionsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     model = TutorSubject
     serializer_class = SessionAvailabilitySerializer
     def get_queryset(self):
-        queryset = TutorSubject.objects.values('id', 'id_tutor__id__username', 'id_tutor__schedule__day_hour')
+        queryset = TutorSubject.objects.filter(id_tutor__schedule__available = True).values('id', 'id_tutor__id__username', 'id_tutor__schedule__day_hour')
         subject = self.request.query_params.get('subject')
         if subject:
             queryset = queryset.filter(id_subject = subject)
