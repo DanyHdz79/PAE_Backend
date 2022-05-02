@@ -94,7 +94,7 @@ DATABASES = {
     #}
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'sistemapae2',
+        'NAME': 'sistemapae',
         'USER': 'dhzsql',
         'PASSWORD': 'sqlpass',
         'HOST': '127.0.0.1',

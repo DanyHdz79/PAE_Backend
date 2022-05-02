@@ -1,6 +1,7 @@
 from rest_framework.viewsets import ModelViewSet, ViewSet
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
+from rest_framework import mixins, viewsets
 from django.contrib.auth.models import User
 from .models import Career, Survey, PaeUser, Question, Subject, Session, Schedule, Answer, TutorSubject
 from .serializers import CareerSerializer, SurveySerializer, UserSerializer, PaeUserSerializer, QuestionSerializer, SubjectSerializer, SessionSerializer, ScheduleSerializer, AnswerSerializer, TutorSubjectSerializer, SessionAvailabilitySerializer
@@ -64,11 +65,21 @@ class AnswersViewSet(ModelViewSet):
 
 
 # Specific queries
+class AvailableSessionsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    model = TutorSubject
+    serializer_class = SessionAvailabilitySerializer
+    def get_queryset(self):
+        queryset = TutorSubject.objects.filter(id_tutor__schedule__available = True).values('id', 'id_tutor__id__username', 'id_tutor__schedule__day_hour')
+        subject = self.request.query_params.get('subject')
+        if subject:
+            queryset = queryset.filter(id_subject = subject)
+        return queryset
 
+"""""
 class AvailableSessionsViewSet(ViewSet):
     sub = 'MA1033'
     def list(self, request):
         queryset = TutorSubject.objects.filter(id_subject = self.sub).values('id_tutor__schedule__day_hour')
         serializer = SessionAvailabilitySerializer(queryset, many=True)
         return Response(serializer.data)
-   
+"""
