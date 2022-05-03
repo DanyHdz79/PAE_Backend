@@ -1,13 +1,8 @@
 from dataclasses import field
 from django.contrib.auth.models import User
-from rest_framework.serializers import ModelSerializer, ALL_FIELDS
-from .models import Admin, Career, Survey, PaeUser, Question, Subject, Session, Schedule, Answer, TutorSubject
+from rest_framework.serializers import Serializer, ModelSerializer, ALL_FIELDS, CharField, IntegerField
+from .models import Career, Survey, PaeUser, Question, Subject, Session, Schedule, Answer, TutorSubject
 from rest_framework.authtoken.models import Token
-
-class AdminSerializer(ModelSerializer):
-    class Meta:
-        model = Admin
-        fields = ALL_FIELDS
 
 class CareerSerializer(ModelSerializer):
     class Meta:
@@ -64,3 +59,8 @@ class AnswerSerializer(ModelSerializer):
     class Meta:
         model = Answer
         fields = ALL_FIELDS
+
+class SessionAvailabilitySerializer(Serializer):
+    id = IntegerField()
+    id_tutor__id__username = CharField()
+    id_tutor__schedule__day_hour = CharField()

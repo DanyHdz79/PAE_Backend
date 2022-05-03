@@ -2,13 +2,13 @@ from django.db import models
 from django.contrib.auth.models import User
 
 # Create your models here.
-class Admin(models.Model):
+""" class Admin(models.Model):
     id = models.EmailField(primary_key=True)
     name = models.CharField(max_length=100)
     password = models.CharField(max_length=256) #ecrypt password
 
     def __str__(self):
-        return self.id + ' ' + self.name
+        return self.id + ' ' + self.name """
 
 class Career(models.Model):
     id = models.CharField(max_length=5, primary_key=True)
@@ -23,8 +23,6 @@ class Survey(models.Model):
 
 class PaeUser(models.Model):
     id = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
-
-    #id = models.CharField(max_length=10, primary_key=True)
     semester = models.IntegerField()
     career = models.ForeignKey(Career, on_delete=models.RESTRICT)
     user_type = models.IntegerField()
@@ -34,14 +32,13 @@ class PaeUser(models.Model):
         return str(self.id)
 
 class Subject(models.Model):
-
-    id_subject = models.CharField(max_length=10)
+    id = models.CharField(max_length=10, primary_key=True)
     name = models.CharField(max_length=100)
-    id_career = models.ManyToManyField(Career, blank=True)
+    id_career = models.ManyToManyField(Career)
     semester = models.IntegerField()
 
     def __str__(self):
-        return self.id_subject
+        return self.id
 
 class TutorSubject(models.Model):
     id_tutor = models.ForeignKey(PaeUser, on_delete=models.CASCADE)
@@ -54,9 +51,10 @@ class TutorSubject(models.Model):
 class Schedule(models.Model):
     id_user = models.ForeignKey(PaeUser, on_delete=models.CASCADE)
     day_hour = models.CharField(max_length=4)
+    available = models.BooleanField(default=True)
 
     def __str__(self):
-        return str(self.id_user) + ' ' + self.day_hour
+        return str(self.id_user) + ' - ' + self.day_hour
 
 class Question(models.Model):
     id_survey = models.ForeignKey(Survey, on_delete=models.CASCADE)
@@ -87,7 +85,7 @@ class Session(models.Model):
     spot = models.CharField(max_length=50, null=True)
     request_time = models.DateTimeField()
     verify_time = models.DateTimeField(null=True)
-    id_admin_verify = models.ForeignKey(Admin, null=True, on_delete=models.SET_NULL)
+    id_admin_verify = models.ForeignKey(PaeUser, null=True, on_delete=models.SET_NULL, related_name='id_admin_verify')
 
     def __str__(self):
         return self.id_subject + ' - ' + self.date + ' - ' + self.id_tutor + ' - ' + self.id_student + ' - ' + self.status

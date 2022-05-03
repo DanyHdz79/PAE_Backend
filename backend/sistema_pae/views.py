@@ -1,15 +1,12 @@
-from rest_framework.viewsets import ModelViewSet
+from rest_framework.viewsets import ModelViewSet, ViewSet
 from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework import mixins, viewsets
+from rest_framework.authentication import TokenAuthentication
 from django.contrib.auth.models import User
-from .models import Admin, Career, Survey, PaeUser, Question, Subject, Session, Schedule, Answer, TutorSubject
-from .serializers import AdminSerializer, CareerSerializer, SurveySerializer, UserSerializer, PaeUserSerializer, QuestionSerializer, SubjectSerializer, SessionSerializer, ScheduleSerializer, AnswerSerializer, TutorSubjectSerializer
+from .models import Career, Survey, PaeUser, Question, Subject, Session, Schedule, Answer, TutorSubject
+from .serializers import CareerSerializer, SurveySerializer, UserSerializer, PaeUserSerializer, QuestionSerializer, SubjectSerializer, SessionSerializer, ScheduleSerializer, AnswerSerializer, TutorSubjectSerializer, SessionAvailabilitySerializer
 
-# Create your views here.
-class AdminsViewSet(ModelViewSet):
-    queryset = Admin.objects.all()
-    serializer_class = AdminSerializer
-    permission_classes = (IsAuthenticated, )
-
+# SELECT * queries
 class CareersViewSet(ModelViewSet):
     queryset = Career.objects.all()
     serializer_class = CareerSerializer
@@ -18,21 +15,25 @@ class CareersViewSet(ModelViewSet):
 class SurveysViewSet(ModelViewSet):
     queryset = Survey.objects.all()
     serializer_class = SurveySerializer
+    authentication_classes = (TokenAuthentication, )
     permission_classes = (IsAuthenticated, )
 
 class UsersViewSet(ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = (IsAuthenticated, )
+    authentication_classes = (TokenAuthentication, )
+    permission_classes = (AllowAny, )
 
 class PaeUsersViewSet(ModelViewSet):
     queryset = PaeUser.objects.all()
     serializer_class = PaeUserSerializer
+    authentication_classes = (TokenAuthentication, )
     permission_classes = (IsAuthenticated, )
 
 class QuestionsViewSet(ModelViewSet):
     queryset = Question.objects.all()
     serializer_class = QuestionSerializer
+    authentication_classes = (TokenAuthentication, )
     permission_classes = (IsAuthenticated, )
 
 class SubjectsViewSet(ModelViewSet):
@@ -42,20 +43,38 @@ class SubjectsViewSet(ModelViewSet):
 
 class TutorSubjectsViewSet(ModelViewSet):
     queryset = TutorSubject.objects.all()
-    serializer_class = SubjectSerializer
+    serializer_class = TutorSubjectSerializer
+    authentication_classes = (TokenAuthentication, )
     permission_classes = (IsAuthenticated, )
 
 class SessionsViewSet(ModelViewSet):
     queryset = Session.objects.all()
     serializer_class = SessionSerializer
+    authentication_classes = (TokenAuthentication, )
     permission_classes = (IsAuthenticated, )
 
 class SchedulesViewSet(ModelViewSet):
     queryset = Schedule.objects.all()
     serializer_class = ScheduleSerializer
+    authentication_classes = (TokenAuthentication, )
     permission_classes = (IsAuthenticated, )
 
 class AnswersViewSet(ModelViewSet):
     queryset = Answer.objects.all()
     serializer_class = AnswerSerializer
+    authentication_classes = (TokenAuthentication, )
     permission_classes = (IsAuthenticated, )
+
+
+# Specific queries
+class AvailableSessionsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    permission_classes = (IsAuthenticated, )
+    authentication_classes = (TokenAuthentication, )
+    model = TutorSubject
+    serializer_class = SessionAvailabilitySerializer
+    def get_queryset(self):
+        queryset = TutorSubject.objects.filter(id_tutor__schedule__available = True).values('id', 'id_tutor__id__username', 'id_tutor__schedule__day_hour')
+        subject = self.request.query_params.get('subject')
+        if subject:
+            queryset = queryset.filter(id_subject = subject)
+        return queryset

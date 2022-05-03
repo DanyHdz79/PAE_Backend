@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'sistema_pae',
     'rest_framework',
+    'rest_framework.authtoken',
     'corsheaders'
 ]
 
@@ -57,11 +58,11 @@ MIDDLEWARE = [
 
 CORS_ALLOW_ALL_ORIGINS = True
 
-REST_FRAMEWORK = {
+""" REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': {
         'rest_framework.permissions.IsAuthenticated'
     }
-}
+} """
 
 ROOT_URLCONF = 'backend.urls'
 
@@ -99,6 +100,12 @@ DATABASES = {
         'PASSWORD': 'sqlpass',
         'HOST': '127.0.0.1',
         'PORT': '5432',
+    }
+}
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': {
+        'rest_framework.permissions.IsAuthenticated'
     }
 }
 
