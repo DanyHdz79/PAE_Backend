@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'sistema_pae',
     'rest_framework',
+    'rest_framework.authtoken',
     'corsheaders'
 ]
 
@@ -99,6 +100,12 @@ DATABASES = {
         'PASSWORD': 'sqlpass',
         'HOST': '127.0.0.1',
         'PORT': '5432',
+    }
+}
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': {
+        'rest_framework.permissions.IsAuthenticated'
     }
 }
 

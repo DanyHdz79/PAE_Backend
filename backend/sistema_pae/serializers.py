@@ -4,11 +4,6 @@ from rest_framework.serializers import Serializer, ModelSerializer, ALL_FIELDS, 
 from .models import Career, Survey, PaeUser, Question, Subject, Session, Schedule, Answer, TutorSubject
 from rest_framework.authtoken.models import Token
 
-""" class AdminSerializer(ModelSerializer):
-    class Meta:
-        model = Admin
-        fields = ALL_FIELDS """
-
 class CareerSerializer(ModelSerializer):
     class Meta:
         model = Career
