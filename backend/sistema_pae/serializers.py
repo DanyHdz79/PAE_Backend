@@ -20,10 +20,10 @@ class UserSerializer(ModelSerializer):
         fields = ALL_FIELDS
         extra_kwargs = {'password':{'required':True, 'write_only':True}}
 
-        def create(self, validated_data):
-            user = User.objects.create_user(**validated_data)
-            Token.objects.create(user=user)
-            return user
+    def create(self, validated_data):
+        user = User.objects.create_user(**validated_data)
+        Token.objects.create(user=user)
+        return user
 
 class PaeUserSerializer(ModelSerializer):
     class Meta:

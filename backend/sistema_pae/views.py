@@ -16,7 +16,7 @@ class SurveysViewSet(ModelViewSet):
     queryset = Survey.objects.all()
     serializer_class = SurveySerializer
     authentication_classes = (TokenAuthentication, )
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (AllowAny, )
 
 class UsersViewSet(ModelViewSet):
     queryset = User.objects.all()
@@ -28,13 +28,13 @@ class PaeUsersViewSet(ModelViewSet):
     queryset = PaeUser.objects.all()
     serializer_class = PaeUserSerializer
     authentication_classes = (TokenAuthentication, )
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (AllowAny, )
 
 class QuestionsViewSet(ModelViewSet):
     queryset = Question.objects.all()
     serializer_class = QuestionSerializer
     authentication_classes = (TokenAuthentication, )
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (AllowAny, )
 
 class SubjectsViewSet(ModelViewSet):
     queryset = Subject.objects.all()
@@ -45,30 +45,30 @@ class TutorSubjectsViewSet(ModelViewSet):
     queryset = TutorSubject.objects.all()
     serializer_class = TutorSubjectSerializer
     authentication_classes = (TokenAuthentication, )
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (AllowAny, )
 
 class SessionsViewSet(ModelViewSet):
     queryset = Session.objects.all()
     serializer_class = SessionSerializer
     authentication_classes = (TokenAuthentication, )
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (AllowAny, )
 
 class SchedulesViewSet(ModelViewSet):
     queryset = Schedule.objects.all()
     serializer_class = ScheduleSerializer
     authentication_classes = (TokenAuthentication, )
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (AllowAny, )
 
 class AnswersViewSet(ModelViewSet):
     queryset = Answer.objects.all()
     serializer_class = AnswerSerializer
     authentication_classes = (TokenAuthentication, )
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (AllowAny, )
 
 
 # Specific queries
 class AvailableSessionsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (AllowAny, )
     authentication_classes = (TokenAuthentication, )
     model = TutorSubject
     serializer_class = SessionAvailabilitySerializer
