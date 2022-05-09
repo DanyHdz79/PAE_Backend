@@ -4,7 +4,7 @@ from rest_framework import mixins, viewsets
 from rest_framework.authentication import TokenAuthentication
 from django.contrib.auth.models import User
 from .models import Career, Survey, PaeUser, Question, Subject, Session, Schedule, Answer, TutorSubject
-from .serializers import CareerSerializer, SurveySerializer, UserSerializer, PaeUserSerializer, QuestionSerializer, SubjectSerializer, SessionSerializer, ScheduleSerializer, AnswerSerializer, TutorSubjectSerializer, SessionAvailabilitySerializer
+from .serializers import CareerSerializer, SessionCardSerializer, SurveySerializer, UserSerializer, PaeUserSerializer, QuestionSerializer, SubjectSerializer, SessionSerializer, ScheduleSerializer, AnswerSerializer, TutorSubjectSerializer, SessionAvailabilitySerializer, SessionCardSerializer
 
 # SELECT * queries
 class CareersViewSet(ModelViewSet):
@@ -77,4 +77,37 @@ class AvailableSessionsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         subject = self.request.query_params.get('subject')
         if subject:
             queryset = queryset.filter(id_subject = subject)
+        return queryset
+
+class SessionsOfSpecificStudentViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    permission_classes = (AllowAny, )
+    authentication_classes = (TokenAuthentication, )
+    model = Session
+    serializer_class = SessionCard
+    def get_queryset(self):
+        queryset = Session.objects.all().values('id', 'id_subject__name', 'id_tutor__id__first_name', 'id_tutor__id__email', 'id_student__id__first_name', 'id_student__id__email', 'date', 'spot', 'status')
+        student = self.request.query_params.get('student')
+        if student:
+            queryset = queryset.filter(id_student__id = student)
+        return queryset
+
+class SessionsOfSpecificTutorViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    permission_classes = (AllowAny, )
+    authentication_classes = (TokenAuthentication, )
+    model = Session
+    serializer_class = SessionCard
+    def get_queryset(self):
+        queryset = Session.objects.all().values('id', 'id_subject__name', 'id_tutor__id__first_name', 'id_tutor__id__email', 'id_student__id__first_name', 'id_student__id__email', 'date', 'spot', 'status')
+        tutor = self.request.query_params.get('tutor')
+        if tutor:
+            queryset = queryset.filter(id_tutor__id = tutor)
+        return queryset
+
+class PendingSessionsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    permission_classes = (AllowAny, )
+    authentication_classes = (TokenAuthentication, )
+    model = Session
+    serializer_class = SessionCardSerializer
+    def get_queryset(self):
+        queryset = Session.objects.filter(status = 0).values('id', 'id_subject__name', 'id_tutor__id__first_name', 'id_tutor__id__email', 'id_student__id__first_name', 'id_student__id__email', 'date', 'spot', 'status')
         return queryset

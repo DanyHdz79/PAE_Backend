@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import CareersViewSet, SurveysViewSet, UsersViewSet, QuestionsViewSet, SubjectsViewSet, SessionsViewSet, SchedulesViewSet, AnswersViewSet, TutorSubjectsViewSet, AvailableSessionsViewSet, PaeUsersViewSet
+from .views import CareersViewSet, SurveysViewSet, UsersViewSet, QuestionsViewSet, SubjectsViewSet, SessionsViewSet, SchedulesViewSet, AnswersViewSet, TutorSubjectsViewSet, AvailableSessionsViewSet, PaeUsersViewSet, SessionsOfSpecificStudentViewSet, SessionsOfSpecificTutorViewSet, PendingSessionsViewSet
 from rest_framework import routers
 
 router = routers.DefaultRouter()
@@ -16,5 +16,8 @@ router.register('sessions', SessionsViewSet)
 router.register('schedules', SchedulesViewSet)
 router.register('answers', AnswersViewSet)
 router.register('available_sessions', AvailableSessionsViewSet, basename='available_sessions')
+router.register('sessions_of_specific_student', SessionsOfSpecificStudentViewSet, basename='sessions_of_specific_student')
+router.register('sessions_of_specific_tutor', SessionsOfSpecificTutorViewSet, basename='sessions_of_specific_tutor')
+router.register('pending_sessions', PendingSessionsViewSet, basename='pending_sessions')
 
 urlpatterns = router.urls
