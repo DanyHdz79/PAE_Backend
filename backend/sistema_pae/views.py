@@ -3,8 +3,9 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework import mixins, viewsets
 from rest_framework.authentication import TokenAuthentication
 from django.contrib.auth.models import User
+from django.db.models import Count, Q
 from .models import Career, Survey, PaeUser, Question, Subject, Session, Schedule, Answer, TutorSubject
-from .serializers import CareerSerializer, SessionCardSerializer, SurveySerializer, UserSerializer, PaeUserSerializer, QuestionSerializer, SubjectSerializer, SessionSerializer, ScheduleSerializer, AnswerSerializer, TutorSubjectSerializer, SessionAvailabilitySerializer, SessionCardSerializer
+from .serializers import CareerSerializer, SessionCardSerializer, SurveySerializer, UserSerializer, PaeUserSerializer, QuestionSerializer, SubjectSerializer, SessionSerializer, ScheduleSerializer, AnswerSerializer, TutorSubjectSerializer, SessionAvailabilitySerializer, SessionCardSerializer, OrderedTutorsForSpecificSessionSerializer
 
 # SELECT * queries
 class CareersViewSet(ModelViewSet):
@@ -79,11 +80,23 @@ class AvailableSessionsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
             queryset = queryset.filter(id_subject = subject)
         return queryset
 
+class OrderedTutorsForSessionViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    permission_classes = (AllowAny, )
+    authentication_classes = (TokenAuthentication, )
+    model = TutorSubject
+    serializer_class = OrderedTutorsForSpecificSessionSerializer
+    def get_queryset(self):
+        subject = self.request.query_params.get('subject')
+        dayHour = self.request.query_params.get('dayHour')
+        if subject and dayHour:
+            queryset = TutorSubject.objects.filter(id_tutor__schedule__available = True,id_subject = subject, id_tutor__schedule__day_hour = dayHour).annotate(service_hours = Count('id_tutor__session', filter=Q(id_tutor__session__status = 1))).order_by('service_hours').values('id_tutor__id__first_name', 'service_hours', 'id_subject', 'id_tutor__schedule__day_hour')
+            return queryset
+
 class SessionsOfSpecificStudentViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     permission_classes = (AllowAny, )
     authentication_classes = (TokenAuthentication, )
     model = Session
-    serializer_class = SessionCard
+    serializer_class = SessionCardSerializer
     def get_queryset(self):
         queryset = Session.objects.all().values('id', 'id_subject__name', 'id_tutor__id__first_name', 'id_tutor__id__email', 'id_student__id__first_name', 'id_student__id__email', 'date', 'spot', 'status')
         student = self.request.query_params.get('student')
@@ -95,7 +108,7 @@ class SessionsOfSpecificTutorViewSet(mixins.ListModelMixin, viewsets.GenericView
     permission_classes = (AllowAny, )
     authentication_classes = (TokenAuthentication, )
     model = Session
-    serializer_class = SessionCard
+    serializer_class = SessionCardSerializer
     def get_queryset(self):
         queryset = Session.objects.all().values('id', 'id_subject__name', 'id_tutor__id__first_name', 'id_tutor__id__email', 'id_student__id__first_name', 'id_student__id__email', 'date', 'spot', 'status')
         tutor = self.request.query_params.get('tutor')
