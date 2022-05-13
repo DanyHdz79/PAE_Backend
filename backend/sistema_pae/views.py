@@ -5,7 +5,7 @@ from rest_framework.authentication import TokenAuthentication
 from django.contrib.auth.models import User
 from django.db.models import Count, Q
 from .models import Career, Survey, PaeUser, Question, Subject, Session, Schedule, Answer, TutorSubject
-from .serializers import CareerSerializer, SessionCardSerializer, SurveySerializer, UserSerializer, PaeUserSerializer, QuestionSerializer, SubjectSerializer, SessionSerializer, ScheduleSerializer, AnswerSerializer, TutorSubjectSerializer, SessionAvailabilitySerializer, SessionCardSerializer, OrderedTutorsForSpecificSessionSerializer
+from .serializers import CareerSerializer, SessionCardSerializer, SurveySerializer, UserSerializer, PaeUserSerializer, QuestionSerializer, SubjectSerializer, SessionSerializer, ScheduleSerializer, AnswerSerializer, TutorSubjectSerializer, SessionAvailabilitySerializer, SessionCardSerializer, OrderedTutorsForSpecificSessionSerializer, ServiceHoursSerializer, StudentsSerializer
 
 # SELECT * queries
 class CareersViewSet(ModelViewSet):
@@ -74,7 +74,7 @@ class AvailableSessionsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     model = TutorSubject
     serializer_class = SessionAvailabilitySerializer
     def get_queryset(self):
-        queryset = TutorSubject.objects.filter(id_tutor__schedule__available = True).values('id', 'id_tutor__id__username', 'id_tutor__schedule__day_hour')
+        queryset = TutorSubject.objects.filter(id_tutor__schedule__available = True).annotate(service_hours = Count('id_tutor__session', filter=Q(id_tutor__session__status = 1))).order_by('service_hours').values('id', 'id_tutor__id__username', 'id_tutor__schedule__day_hour', 'service_hours')
         subject = self.request.query_params.get('subject')
         if subject:
             queryset = queryset.filter(id_subject = subject)
@@ -90,6 +90,17 @@ class OrderedTutorsForSessionViewSet(mixins.ListModelMixin, viewsets.GenericView
         dayHour = self.request.query_params.get('dayHour')
         if subject and dayHour:
             queryset = TutorSubject.objects.filter(id_tutor__schedule__available = True,id_subject = subject, id_tutor__schedule__day_hour = dayHour).annotate(service_hours = Count('id_tutor__session', filter=Q(id_tutor__session__status = 1))).order_by('service_hours').values('id_tutor__id__first_name', 'service_hours', 'id_subject', 'id_tutor__schedule__day_hour')
+            return queryset
+
+class ServiceHoursViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    permission_classes = (AllowAny, )
+    authentication_classes = (TokenAuthentication, )
+    model = TutorSubject
+    serializer_class = ServiceHoursSerializer
+    def get_queryset(self):
+        tutor = self.request.query_params.get('tutor')
+        if tutor:
+            queryset = TutorSubject.objects.filter(id_tutor = tutor).distinct().annotate(service_hours = Count('id_tutor__session', filter=Q(id_tutor__session__status = 1))).values('id_tutor__id__first_name', 'service_hours')
             return queryset
 
 class SessionsOfSpecificStudentViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
@@ -123,4 +134,22 @@ class PendingSessionsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = SessionCardSerializer
     def get_queryset(self):
         queryset = Session.objects.filter(status = 0).values('id', 'id_subject__name', 'id_tutor__id__first_name', 'id_tutor__id__email', 'id_student__id__first_name', 'id_student__id__email', 'date', 'spot', 'status')
+        return queryset
+
+class StudentsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    permission_classes = (AllowAny, )
+    authentication_classes = (TokenAuthentication, )
+    model = PaeUser
+    serializer_class = StudentsSerializer
+    def get_queryset(self):
+        queryset = PaeUser.objects.filter(user_type = 0).values('id', 'id__first_name')
+        return queryset
+
+class TutorsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    permission_classes = (AllowAny, )
+    authentication_classes = (TokenAuthentication, )
+    model = PaeUser
+    serializer_class = StudentsSerializer
+    def get_queryset(self):
+        queryset = PaeUser.objects.filter(user_type = 1).values('id', 'id__first_name')
         return queryset
