@@ -5,7 +5,7 @@ from rest_framework.authentication import TokenAuthentication
 from django.contrib.auth.models import User
 from django.db.models import Count, Q
 from .models import Career, Survey, PaeUser, Question, Subject, Session, Schedule, Answer, TutorSubject
-from .serializers import CareerSerializer, SessionCardSerializer, SurveySerializer, UserSerializer, PaeUserSerializer, QuestionSerializer, SubjectSerializer, SessionSerializer, ScheduleSerializer, AnswerSerializer, TutorSubjectSerializer, SessionAvailabilitySerializer, SessionCardSerializer, OrderedTutorsForSpecificSessionSerializer, ServiceHoursSerializer, StudentsSerializer
+from .serializers import CareerSerializer, SessionCardSerializer, SurveySerializer, UserSerializer, PaeUserSerializer, QuestionSerializer, SubjectSerializer, SessionSerializer, ScheduleSerializer, AnswerSerializer, TutorSubjectSerializer, SessionAvailabilitySerializer, SessionCardSerializer, OrderedTutorsForSpecificSessionSerializer, ServiceHoursSerializer, UserDataSerializer, SubjectsByTutorSerializer, ScheduleByTutorSerializer, AdminsSerializer
 
 # SELECT * queries
 class CareersViewSet(ModelViewSet):
@@ -140,16 +140,45 @@ class StudentsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     permission_classes = (AllowAny, )
     authentication_classes = (TokenAuthentication, )
     model = PaeUser
-    serializer_class = StudentsSerializer
+    serializer_class = UserDataSerializer
     def get_queryset(self):
-        queryset = PaeUser.objects.filter(user_type = 0).values('id', 'id__first_name')
+        queryset = PaeUser.objects.filter(user_type = 0).values('id', 'id__first_name', 'career', 'semester')
         return queryset
 
 class TutorsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     permission_classes = (AllowAny, )
     authentication_classes = (TokenAuthentication, )
     model = PaeUser
-    serializer_class = StudentsSerializer
+    serializer_class = UserDataSerializer
     def get_queryset(self):
-        queryset = PaeUser.objects.filter(user_type = 1).values('id', 'id__first_name')
+        queryset = PaeUser.objects.filter(user_type = 1).values('id', 'id__first_name', 'career', 'semester')
+        return queryset
+
+class AdminsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    permission_classes = (AllowAny, )
+    authentication_classes = (TokenAuthentication, )
+    model = User
+    serializer_class = AdminsSerializer
+    def get_queryset(self):
+        queryset = User.objects.filter(is_superuser = True).values('id', 'first_name')
+        return queryset
+
+class SubjectsByTutorViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    permission_classes = (AllowAny, )
+    authentication_classes = (TokenAuthentication, )
+    model = TutorSubject
+    serializer_class = SubjectsByTutorSerializer
+    def get_queryset(self):
+        tutor = self.request.query_params.get('tutor')
+        queryset = TutorSubject.objects.filter(id_tutor = tutor).values('id_subject__name')
+        return queryset
+
+class ScheduleByTutorViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    permission_classes = (AllowAny, )
+    authentication_classes = (TokenAuthentication, )
+    model = Schedule
+    serializer_class = ScheduleByTutorSerializer
+    def get_queryset(self):
+        tutor = self.request.query_params.get('tutor')
+        queryset = Schedule.objects.filter(id_user = tutor).values('day_hour', 'available')
         return queryset

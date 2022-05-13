@@ -1,6 +1,6 @@
 from ast import Or
 from django.urls import path
-from .views import CareersViewSet, SurveysViewSet, UsersViewSet, QuestionsViewSet, SubjectsViewSet, SessionsViewSet, SchedulesViewSet, AnswersViewSet, TutorSubjectsViewSet, AvailableSessionsViewSet, PaeUsersViewSet, SessionsOfSpecificStudentViewSet, SessionsOfSpecificTutorViewSet, PendingSessionsViewSet, OrderedTutorsForSessionViewSet, ServiceHoursViewSet, StudentsViewSet, TutorsViewSet
+from .views import CareersViewSet, SurveysViewSet, UsersViewSet, QuestionsViewSet, SubjectsViewSet, SessionsViewSet, SchedulesViewSet, AnswersViewSet, TutorSubjectsViewSet, AvailableSessionsViewSet, PaeUsersViewSet, SessionsOfSpecificStudentViewSet, SessionsOfSpecificTutorViewSet, PendingSessionsViewSet, OrderedTutorsForSessionViewSet, ServiceHoursViewSet, StudentsViewSet, TutorsViewSet, SubjectsByTutorViewSet, ScheduleByTutorViewSet, AdminsViewSet
 from rest_framework import routers
 
 router = routers.DefaultRouter()
@@ -24,5 +24,8 @@ router.register('ordered_tutors_for_session', OrderedTutorsForSessionViewSet, ba
 router.register('service_hours', ServiceHoursViewSet, basename='service_hours')
 router.register('students', StudentsViewSet, basename='students')
 router.register('tutors', TutorsViewSet, basename='tutors')
+router.register('admins', AdminsViewSet, basename='admins')
+router.register('subjects_by_tutor', SubjectsByTutorViewSet, basename='subjects_by_tutor')
+router.register('schedule_by_tutor', ScheduleByTutorViewSet, basename='schedule_by_tutor')
 
 urlpatterns = router.urls
