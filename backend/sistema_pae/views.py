@@ -1,11 +1,13 @@
+from contextvars import Token
 from rest_framework.viewsets import ModelViewSet, ViewSet
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework import mixins, viewsets
 from rest_framework.authentication import TokenAuthentication
 from django.contrib.auth.models import User
 from django.db.models import Count, Q
+from datetime import datetime, timedelta
 from .models import Career, Survey, PaeUser, Question, Subject, Session, Schedule, Answer, TutorSubject
-from .serializers import CareerSerializer, SessionCardSerializer, SurveySerializer, UserSerializer, PaeUserSerializer, QuestionSerializer, SubjectSerializer, SessionSerializer, ScheduleSerializer, AnswerSerializer, TutorSubjectSerializer, SessionAvailabilitySerializer, SessionCardSerializer, OrderedTutorsForSpecificSessionSerializer, ServiceHoursSerializer, UserDataSerializer, SubjectsByTutorSerializer, ScheduleByTutorSerializer, AdminsSerializer
+from .serializers import CareerSerializer, SessionCardSerializer, SurveySerializer, UserSerializer, PaeUserSerializer, QuestionSerializer, SubjectSerializer, SessionSerializer, ScheduleSerializer, AnswerSerializer, TutorSubjectSerializer, SessionAvailabilitySerializer, SessionCardSerializer, OrderedTutorsForSpecificSessionSerializer, ServiceHoursSerializer, UserDataSerializer, SubjectsByTutorSerializer, ScheduleByTutorSerializer, AdminsSerializer, RecentTutorsOfStudentSerializer, CurrentUserDataSerializer
 
 # SELECT * queries
 class CareersViewSet(ModelViewSet):
@@ -68,6 +70,16 @@ class AnswersViewSet(ModelViewSet):
 
 
 # Specific queries
+class CurrentUserDataViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    permission_classes = (AllowAny, )
+    authentication_classes = (TokenAuthentication, )
+    model = PaeUser
+    serializer_class = CurrentUserDataSerializer
+    def get_queryset(self):
+        schoolID = self.request.query_params.get('schoolID')
+        queryset = PaeUser.objects.filter(id__username = schoolID).values('id', 'user_type', 'id__is_superuser')
+        return queryset
+
 class AvailableSessionsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     permission_classes = (AllowAny, )
     authentication_classes = (TokenAuthentication, )
@@ -181,4 +193,15 @@ class ScheduleByTutorViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     def get_queryset(self):
         tutor = self.request.query_params.get('tutor')
         queryset = Schedule.objects.filter(id_user = tutor).values('day_hour', 'available')
+        return queryset
+
+class RecentTutorsOfStudentViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    permission_classes = (AllowAny, )
+    authentication_classes = (TokenAuthentication, )
+    model = Session
+    serializer_class = RecentTutorsOfStudentSerializer
+    def get_queryset(self):
+        date_a_month_ago = datetime.now() - timedelta(days = 30)
+        student = self.request.query_params.get('student')
+        queryset = Session.objects.filter(id_student = student, status = 1, date__gt = date_a_month_ago).values('id_tutor__id__first_name').distinct()
         return queryset

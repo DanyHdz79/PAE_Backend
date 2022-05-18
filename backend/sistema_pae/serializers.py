@@ -61,6 +61,17 @@ class AnswerSerializer(ModelSerializer):
         model = Answer
         fields = ALL_FIELDS
 
+class CurrentUserDataSerializer(Serializer):
+    id = IntegerField()
+    user_type = IntegerField()
+    id__is_superuser = BooleanField()
+
+class SessionAvailabilitySerializer(Serializer):
+    id = IntegerField()
+    id_tutor__id__username = CharField()
+    id_tutor__schedule__day_hour = CharField()
+    service_hours = IntegerField()        
+
 class SessionAvailabilitySerializer(Serializer):
     id = IntegerField()
     id_tutor__id__username = CharField()
@@ -104,3 +115,6 @@ class SubjectsByTutorSerializer(Serializer):
 class ScheduleByTutorSerializer(Serializer):
     day_hour = CharField()
     available = BooleanField()
+
+class RecentTutorsOfStudentSerializer(Serializer):
+    id_tutor__id__first_name = CharField()
