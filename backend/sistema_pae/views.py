@@ -77,7 +77,7 @@ class CurrentUserDataViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = CurrentUserDataSerializer
     def get_queryset(self):
         schoolID = self.request.query_params.get('schoolID')
-        queryset = PaeUser.objects.filter(id__username = schoolID).values('id', 'user_type', 'id__is_superuser')
+        queryset = PaeUser.objects.filter(id__username = schoolID).values('id', 'user_type')
         return queryset
 
 class AvailableSessionsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
@@ -204,4 +204,13 @@ class RecentTutorsOfStudentViewSet(mixins.ListModelMixin, viewsets.GenericViewSe
         date_a_month_ago = datetime.now() - timedelta(days = 30)
         student = self.request.query_params.get('student')
         queryset = Session.objects.filter(id_student = student, status = 1, date__gt = date_a_month_ago).values('id_tutor__id__first_name').distinct()
+        return queryset
+
+class PendingTutorsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    permission_classes = (AllowAny, )
+    authentication_classes = (TokenAuthentication, )
+    model = PaeUser
+    serializer_class = UserDataSerializer
+    def get_queryset(self):
+        queryset = PaeUser.objects.filter(user_type = 1, status = 2).values('id', 'id__first_name', 'career', 'semester')
         return queryset

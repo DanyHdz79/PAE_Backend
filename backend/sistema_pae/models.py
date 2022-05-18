@@ -23,10 +23,10 @@ class Survey(models.Model):
 
 class PaeUser(models.Model):
     id = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
-    semester = models.IntegerField()
-    career = models.ForeignKey(Career, on_delete=models.RESTRICT)
-    user_type = models.IntegerField()
-    status = models.IntegerField()
+    semester = models.IntegerField(null = True)
+    career = models.ForeignKey(Career, on_delete=models.RESTRICT, null = True)
+    user_type = models.IntegerField() #0 - Student  1 - Tutor  2 - Admin
+    status = models.IntegerField() #0 - Available  1 - LockedBySurvey  2 - NotVerified
 
     def __str__(self):
         return str(self.id)
