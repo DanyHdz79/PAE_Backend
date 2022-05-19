@@ -77,7 +77,7 @@ class CurrentUserDataViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = CurrentUserDataSerializer
     def get_queryset(self):
         schoolID = self.request.query_params.get('schoolID')
-        queryset = PaeUser.objects.filter(id__username = schoolID).values('id', 'user_type')
+        queryset = PaeUser.objects.filter(id__username = schoolID).values('id', 'user_type', "status")
         return queryset
 
 class AvailableSessionsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):

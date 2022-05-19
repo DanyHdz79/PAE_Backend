@@ -64,6 +64,7 @@ class AnswerSerializer(ModelSerializer):
 class CurrentUserDataSerializer(Serializer):
     id = IntegerField()
     user_type = IntegerField()
+    status = IntegerField()
 
 class SessionAvailabilitySerializer(Serializer):
     id = IntegerField()
