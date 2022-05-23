@@ -1,6 +1,7 @@
 from dataclasses import field
+from xmlrpc.client import DateTime
 from django.contrib.auth.models import User
-from rest_framework.serializers import Serializer, ModelSerializer, ALL_FIELDS, CharField, IntegerField
+from rest_framework.serializers import Serializer, ModelSerializer, ALL_FIELDS, CharField, IntegerField, EmailField, DateTimeField, BooleanField
 from .models import Career, Survey, PaeUser, Question, Subject, Session, Schedule, Answer, TutorSubject
 from rest_framework.authtoken.models import Token
 
@@ -20,10 +21,10 @@ class UserSerializer(ModelSerializer):
         fields = ALL_FIELDS
         extra_kwargs = {'password':{'required':True, 'write_only':True}}
 
-        def create(self, validated_data):
-            user = User.objects.create_user(**validated_data)
-            Token.objects.create(user=user)
-            return user
+    def create(self, validated_data):
+        user = User.objects.create_user(**validated_data)
+        Token.objects.create(user=user)
+        return user
 
 class PaeUserSerializer(ModelSerializer):
     class Meta:
@@ -60,7 +61,60 @@ class AnswerSerializer(ModelSerializer):
         model = Answer
         fields = ALL_FIELDS
 
+class CurrentUserDataSerializer(Serializer):
+    id = IntegerField()
+    user_type = IntegerField()
+    status = IntegerField()
+
 class SessionAvailabilitySerializer(Serializer):
     id = IntegerField()
     id_tutor__id__username = CharField()
     id_tutor__schedule__day_hour = CharField()
+    service_hours = IntegerField()        
+
+class SessionAvailabilitySerializer(Serializer):
+    id = IntegerField()
+    id_tutor__id__username = CharField()
+    id_tutor__schedule__day_hour = CharField()
+    service_hours = IntegerField()
+
+class OrderedTutorsForSpecificSessionSerializer(Serializer):
+    id_tutor__id__first_name = CharField()
+    service_hours = IntegerField()
+    id_subject = CharField()
+    id_tutor__schedule__day_hour = CharField()
+
+class ServiceHoursSerializer(Serializer):
+    id_tutor__id__first_name = CharField()
+    service_hours = IntegerField()
+
+class SessionCardSerializer(Serializer):
+    id = IntegerField()
+    id_subject__name = CharField()
+    id_tutor__id__first_name = CharField()
+    id_tutor__id__email = EmailField()
+    id_student__id__first_name = CharField()
+    id_student__id__email = EmailField()
+    date = DateTimeField()
+    spot = CharField()
+    status = IntegerField()
+
+class UserDataSerializer(Serializer):
+    id = IntegerField()
+    id__first_name = CharField()
+    career = CharField()
+    semester = IntegerField()
+
+class AdminsSerializer(Serializer):
+    id = IntegerField()
+    first_name = CharField()
+
+class SubjectsByTutorSerializer(Serializer):
+    id_subject__name = CharField()
+
+class ScheduleByTutorSerializer(Serializer):
+    day_hour = CharField()
+    available = BooleanField()
+
+class RecentTutorsOfStudentSerializer(Serializer):
+    id_tutor__id__first_name = CharField()
