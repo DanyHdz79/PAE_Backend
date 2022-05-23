@@ -6,8 +6,8 @@ from rest_framework.authentication import TokenAuthentication
 from django.contrib.auth.models import User
 from django.db.models import Count, Q
 from datetime import datetime, timedelta
-from .models import Career, Survey, PaeUser, Question, Subject, Session, Schedule, Answer, TutorSubject
-from .serializers import CareerSerializer, SessionCardSerializer, SurveySerializer, UserSerializer, PaeUserSerializer, QuestionSerializer, SubjectSerializer, SessionSerializer, ScheduleSerializer, AnswerSerializer, TutorSubjectSerializer, SessionAvailabilitySerializer, SessionCardSerializer, OrderedTutorsForSpecificSessionSerializer, ServiceHoursSerializer, UserDataSerializer, SubjectsByTutorSerializer, ScheduleByTutorSerializer, AdminsSerializer, RecentTutorsOfStudentSerializer, CurrentUserDataSerializer
+from .models import Career, Survey, PaeUser, Question, Subject, Session, Schedule, Answer, TutorSubject, Choice
+from .serializers import CareerSerializer, SessionCardSerializer, SurveySerializer, UserSerializer, PaeUserSerializer, QuestionSerializer, SubjectSerializer, SessionSerializer, ScheduleSerializer, AnswerSerializer, TutorSubjectSerializer, SessionAvailabilitySerializer, SessionCardSerializer, OrderedTutorsForSpecificSessionSerializer, ServiceHoursSerializer, UserDataSerializer, SubjectsByTutorSerializer, ScheduleByTutorSerializer, AdminsSerializer, RecentTutorsOfStudentSerializer, CurrentUserDataSerializer, ChoiceSerializer
 
 # SELECT * queries
 class CareersViewSet(ModelViewSet):
@@ -36,6 +36,12 @@ class PaeUsersViewSet(ModelViewSet):
 class QuestionsViewSet(ModelViewSet):
     queryset = Question.objects.all()
     serializer_class = QuestionSerializer
+    authentication_classes = (TokenAuthentication, )
+    permission_classes = (AllowAny, )
+
+class ChoicesViewSet(ModelViewSet):
+    queryset = Choice.objects.all()
+    serializer_class = ChoiceSerializer
     authentication_classes = (TokenAuthentication, )
     permission_classes = (AllowAny, )
 

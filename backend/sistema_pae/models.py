@@ -21,6 +21,9 @@ class Survey(models.Model):
     creation_date = models.DateTimeField()
     survey_type = models.IntegerField()
 
+    def __str__(self):
+        return self.id
+
 class PaeUser(models.Model):
     id = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
     semester = models.IntegerField(null = True)
