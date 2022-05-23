@@ -64,6 +64,13 @@ class Question(models.Model):
     def __str__(self):
         return self.id_survey + ' - ' + self.question + ' - ' +self.question_type
 
+class Choice(models.Model):
+    id_question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    choice = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.id_question + ' - ' + self.choice
+
 class Answer(models.Model):
     id_question = models.ForeignKey(Question, on_delete=models.CASCADE)
     id_student = models.ForeignKey(PaeUser, null=True, on_delete=models.SET_NULL, related_name='student_answer')
