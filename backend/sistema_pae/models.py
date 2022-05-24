@@ -19,10 +19,10 @@ class Career(models.Model):
 
 class Survey(models.Model):
     creation_date = models.DateTimeField()
-    survey_type = models.IntegerField()
+    survey_type = models.IntegerField() #0 - For students  1 - For tutors
 
     def __str__(self):
-        return self.id
+        return str(self.id)
 
 class PaeUser(models.Model):
     id = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
@@ -62,10 +62,10 @@ class Schedule(models.Model):
 class Question(models.Model):
     id_survey = models.ForeignKey(Survey, on_delete=models.CASCADE)
     question = models.CharField(max_length=300)
-    question_type = models.IntegerField()
+    question_type = models.IntegerField() #0 - Open  1 - Multiple choice  2 - Scale  3 - File
 
     def __str__(self):
-        return self.id_survey + ' - ' + self.question + ' - ' +self.question_type
+        return str(self.id) + ' - ' + self.question
 
 class Choice(models.Model):
     id_question = models.ForeignKey(Question, on_delete=models.CASCADE)
