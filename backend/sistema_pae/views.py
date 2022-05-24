@@ -258,3 +258,14 @@ class ChoicesOfSpecificQuestionViewSet(mixins.ListModelMixin, viewsets.GenericVi
         question = self.request.query_params.get('question')
         queryset = Choice.objects.filter(id_question = question).order_by('id')
         return queryset
+
+class ScheduleByTutorAndDayHourViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    permission_classes = (AllowAny, )
+    authentication_classes = (TokenAuthentication, )
+    model = Schedule
+    serializer_class = ScheduleSerializer
+    def get_queryset(self):
+        tutor = self.request.query_params.get('tutor')
+        dayHour = self.request.query_params.get('dayHour')
+        queryset = Schedule.objects.filter(id_user = tutor, day_hour = dayHour)
+        return queryset
