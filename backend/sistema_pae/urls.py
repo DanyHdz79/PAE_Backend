@@ -1,6 +1,6 @@
 from ast import Or
 from django.urls import path
-from .views import CareersViewSet, ChoicesViewSet, SurveysViewSet, UsersViewSet, QuestionsViewSet, SubjectsViewSet, SessionsViewSet, SchedulesViewSet, AnswersViewSet, TutorSubjectsViewSet, AvailableSessionsViewSet, PaeUsersViewSet, SessionsOfSpecificStudentViewSet, SessionsOfSpecificTutorViewSet, PendingSessionsViewSet, OrderedTutorsForSessionViewSet, ServiceHoursViewSet, StudentsViewSet, TutorsViewSet, SubjectsByTutorViewSet, ScheduleByTutorViewSet, AdminsViewSet, RecentTutorsOfStudentViewSet, CurrentUserDataViewSet, PendingTutorsViewSet
+from .views import CareersViewSet, ChoicesViewSet, SurveysViewSet, UsersViewSet, QuestionsViewSet, SubjectsViewSet, SessionsViewSet, SchedulesViewSet, AnswersViewSet, TutorSubjectsViewSet, AvailableSessionsViewSet, PaeUsersViewSet, SessionsOfSpecificStudentViewSet, SessionsOfSpecificTutorViewSet, PendingSessionsViewSet, OrderedTutorsForSessionViewSet, ServiceHoursViewSet, StudentsViewSet, TutorsViewSet, SubjectsByTutorViewSet, ScheduleByTutorViewSet, AdminsViewSet, RecentTutorsOfStudentViewSet, CurrentUserDataViewSet, PendingTutorsViewSet, MostRecentSurveyForStudentsViewSet, MostRecentSurveyForTutorsViewSet, QuestionsOfSpecificSurveyViewSet, ChoicesOfSpecificQuestionViewSet
 from rest_framework import routers
 
 router = routers.DefaultRouter()
@@ -31,5 +31,9 @@ router.register('schedule_by_tutor', ScheduleByTutorViewSet, basename='schedule_
 router.register('recent_tutors_of_student', RecentTutorsOfStudentViewSet, basename='recent_tutors_of_student')
 router.register('current_user_data', CurrentUserDataViewSet, basename='current_user_data')
 router.register('pending_tutors', PendingTutorsViewSet, basename='pending_tutors')
+router.register('most_recent_survey_for_students', MostRecentSurveyForStudentsViewSet, basename='most_recent_survey_for_students')
+router.register('most_recent_survey_for_tutors', MostRecentSurveyForTutorsViewSet, basename='most_recent_survey_for_tutors')
+router.register('questions_of_specific_survey', QuestionsOfSpecificSurveyViewSet, basename='questions_of_specific_survey')
+router.register('choices_of_specific_question', ChoicesOfSpecificQuestionViewSet, basename='choices_of_specific_question')
 
 urlpatterns = router.urls

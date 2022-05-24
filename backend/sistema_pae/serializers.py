@@ -70,6 +70,7 @@ class CurrentUserDataSerializer(Serializer):
     id = IntegerField()
     user_type = IntegerField()
     status = IntegerField()
+    id__email = EmailField()
 
 class SessionAvailabilitySerializer(Serializer):
     id = IntegerField()

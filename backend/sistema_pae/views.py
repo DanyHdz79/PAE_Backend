@@ -83,7 +83,7 @@ class CurrentUserDataViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = CurrentUserDataSerializer
     def get_queryset(self):
         schoolID = self.request.query_params.get('schoolID')
-        queryset = PaeUser.objects.filter(id__username = schoolID).values('id', 'user_type', "status")
+        queryset = PaeUser.objects.filter(id__username = schoolID).values('id', 'user_type', "status", "id__email")
         return queryset
 
 class AvailableSessionsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
@@ -219,4 +219,42 @@ class PendingTutorsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = UserDataSerializer
     def get_queryset(self):
         queryset = PaeUser.objects.filter(user_type = 1, status = 2).values('id', 'id__first_name', 'career', 'semester')
+        return queryset
+
+class MostRecentSurveyForStudentsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    permission_classes = (AllowAny, )
+    authentication_classes = (TokenAuthentication, )
+    model = Survey
+    serializer_class = SurveySerializer
+    def get_queryset(self):
+        queryset = Survey.objects.filter(survey_type = 0).order_by('-creation_date')[:1]
+        return queryset
+
+class MostRecentSurveyForTutorsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    permission_classes = (AllowAny, )
+    authentication_classes = (TokenAuthentication, )
+    model = Survey
+    serializer_class = SurveySerializer
+    def get_queryset(self):
+        queryset = Survey.objects.filter(survey_type = 1).order_by('-creation_date')[:1]
+        return queryset
+
+class QuestionsOfSpecificSurveyViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    permission_classes = (AllowAny, )
+    authentication_classes = (TokenAuthentication, )
+    model = Question
+    serializer_class = QuestionSerializer
+    def get_queryset(self):
+        survey = self.request.query_params.get('survey')
+        queryset = Question.objects.filter(id_survey = survey).order_by('id')
+        return queryset
+
+class ChoicesOfSpecificQuestionViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    permission_classes = (AllowAny, )
+    authentication_classes = (TokenAuthentication, )
+    model = Choice
+    serializer_class = ChoiceSerializer
+    def get_queryset(self):
+        question = self.request.query_params.get('question')
+        queryset = Choice.objects.filter(id_question = question).order_by('id')
         return queryset
