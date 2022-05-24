@@ -85,7 +85,7 @@ class SessionAvailabilitySerializer(Serializer):
     service_hours = IntegerField()
 
 class OrderedTutorsForSpecificSessionSerializer(Serializer):
-    id_tutor__id__first_name = CharField()
+    id_tutor__id = CharField()
     service_hours = IntegerField()
     id_subject = CharField()
     id_tutor__schedule__day_hour = CharField()
