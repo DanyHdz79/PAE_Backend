@@ -5,7 +5,7 @@ from rest_framework import mixins, viewsets
 from rest_framework.authentication import TokenAuthentication
 from django.contrib.auth.models import User
 from django.db.models import Count, Q
-from datetime import datetime, timedelta
+import datetime
 from .models import Career, Survey, PaeUser, Question, Subject, Session, Schedule, Answer, TutorSubject, Choice
 from .serializers import CareerSerializer, SessionCardSerializer, SurveySerializer, UserSerializer, PaeUserSerializer, QuestionSerializer, SubjectSerializer, SessionSerializer, ScheduleSerializer, AnswerSerializer, TutorSubjectSerializer, SessionAvailabilitySerializer, SessionCardSerializer, OrderedTutorsForSpecificSessionSerializer, ServiceHoursSerializer, UserDataSerializer, SubjectsByTutorSerializer, ScheduleByTutorSerializer, AdminsSerializer, RecentTutorsOfStudentSerializer, CurrentUserDataSerializer, ChoiceSerializer
 
@@ -207,7 +207,7 @@ class RecentTutorsOfStudentViewSet(mixins.ListModelMixin, viewsets.GenericViewSe
     model = Session
     serializer_class = RecentTutorsOfStudentSerializer
     def get_queryset(self):
-        date_a_month_ago = datetime.now() - timedelta(days = 30)
+        date_a_month_ago = datetime.date.today()- datetime.timedelta(days = 30)
         student = self.request.query_params.get('student')
         queryset = Session.objects.filter(id_student = student, status = 3, date__gt = date_a_month_ago).values('id_tutor__id__first_name').distinct()
         return queryset
@@ -268,4 +268,28 @@ class ScheduleByTutorAndDayHourViewSet(mixins.ListModelMixin, viewsets.GenericVi
         tutor = self.request.query_params.get('tutor')
         dayHour = self.request.query_params.get('dayHour')
         queryset = Schedule.objects.filter(id_user = tutor, day_hour = dayHour)
+        return queryset
+
+class RecentSessionsOfStudentViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    permission_classes = (AllowAny, )
+    authentication_classes = (TokenAuthentication, )
+    model = Session
+    serializer_class = SessionCardSerializer
+    def get_queryset(self):
+        today = datetime.date.today()
+        previousMonday = today - datetime.timedelta(days = today.weekday())
+        student = self.request.query_params.get('student')
+        queryset = Session.objects.filter(id_student__id = student, date__gte = previousMonday).values('id', 'id_subject__name', 'id_tutor__id__first_name', 'id_tutor__id__email', 'id_student__id__first_name', 'id_student__id__email', 'date', 'spot', 'status')
+        return queryset
+
+class RecentSessionsOfTutorViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    permission_classes = (AllowAny, )
+    authentication_classes = (TokenAuthentication, )
+    model = Session
+    serializer_class = SessionCardSerializer
+    def get_queryset(self):
+        today = datetime.date.today()
+        previousMonday = today - datetime.timedelta(days = today.weekday())
+        tutor = self.request.query_params.get('tutor')
+        queryset = Session.objects.filter(id_tutor__id = tutor, date__gte = previousMonday).values('id', 'id_subject__name', 'id_tutor__id__first_name', 'id_tutor__id__email', 'id_student__id__first_name', 'id_student__id__email', 'date', 'spot', 'status')
         return queryset
