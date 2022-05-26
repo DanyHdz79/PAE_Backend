@@ -107,7 +107,7 @@ class OrderedTutorsForSessionViewSet(mixins.ListModelMixin, viewsets.GenericView
         subject = self.request.query_params.get('subject')
         dayHour = self.request.query_params.get('dayHour')
         if subject and dayHour:
-            queryset = TutorSubject.objects.filter(id_tutor__user_type = 0,id_tutor__schedule__available = True,id_subject = subject, id_tutor__schedule__day_hour = dayHour).annotate(service_hours = Count('id_tutor__session', filter=Q(id_tutor__session__status = 1))).order_by('service_hours').values('id_tutor__id', 'service_hours', 'id_subject', 'id_tutor__schedule__day_hour')[:1]
+            queryset = TutorSubject.objects.filter(id_tutor__status = 0,id_tutor__schedule__available = True,id_subject = subject, id_tutor__schedule__day_hour = dayHour).annotate(service_hours = Count('id_tutor__session', filter=Q(id_tutor__session__status = 1))).order_by('service_hours').values('id_tutor__id', 'service_hours', 'id_subject', 'id_tutor__schedule__day_hour')[:1]
             return queryset
 
 class ServiceHoursViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
