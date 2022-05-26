@@ -92,7 +92,7 @@ class AvailableSessionsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     model = TutorSubject
     serializer_class = SessionAvailabilitySerializer
     def get_queryset(self):
-        queryset = TutorSubject.objects.filter(id_tutor__schedule__available = True).annotate(service_hours = Count('id_tutor__session', filter=Q(id_tutor__session__status = 1))).order_by('service_hours').values('id', 'id_tutor__id__username', 'id_tutor__schedule__day_hour', 'service_hours')
+        queryset = TutorSubject.objects.filter(id_tutor__status = 0,id_tutor__schedule__available = True).annotate(service_hours = Count('id_tutor__session', filter=Q(id_tutor__session__status = 1))).order_by('service_hours').values('id', 'id_tutor__id__username', 'id_tutor__schedule__day_hour', 'service_hours')
         subject = self.request.query_params.get('subject')
         if subject:
             queryset = queryset.filter(id_subject = subject)
@@ -107,7 +107,7 @@ class OrderedTutorsForSessionViewSet(mixins.ListModelMixin, viewsets.GenericView
         subject = self.request.query_params.get('subject')
         dayHour = self.request.query_params.get('dayHour')
         if subject and dayHour:
-            queryset = TutorSubject.objects.filter(id_tutor__schedule__available = True,id_subject = subject, id_tutor__schedule__day_hour = dayHour).annotate(service_hours = Count('id_tutor__session', filter=Q(id_tutor__session__status = 1))).order_by('service_hours').values('id_tutor__id', 'service_hours', 'id_subject', 'id_tutor__schedule__day_hour')[:1]
+            queryset = TutorSubject.objects.filter(id_tutor__user_type = 0,id_tutor__schedule__available = True,id_subject = subject, id_tutor__schedule__day_hour = dayHour).annotate(service_hours = Count('id_tutor__session', filter=Q(id_tutor__session__status = 1))).order_by('service_hours').values('id_tutor__id', 'service_hours', 'id_subject', 'id_tutor__schedule__day_hour')[:1]
             return queryset
 
 class ServiceHoursViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
@@ -169,16 +169,16 @@ class TutorsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     model = PaeUser
     serializer_class = UserDataSerializer
     def get_queryset(self):
-        queryset = PaeUser.objects.filter(user_type = 1).values('id', 'id__first_name', 'career', 'semester')
+        queryset = PaeUser.objects.filter(~Q(status = 2), user_type = 1).values('id', 'id__first_name', 'career', 'semester')
         return queryset
 
 class AdminsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     permission_classes = (AllowAny, )
     authentication_classes = (TokenAuthentication, )
-    model = User
-    serializer_class = AdminsSerializer
+    model = PaeUser
+    serializer_class = UserDataSerializer
     def get_queryset(self):
-        queryset = User.objects.filter(is_superuser = True).values('id', 'first_name')
+        queryset = PaeUser.objects.filter(user_type = 2).values('id', 'id__first_name')
         return queryset
 
 class SubjectsByTutorViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
@@ -209,7 +209,7 @@ class RecentTutorsOfStudentViewSet(mixins.ListModelMixin, viewsets.GenericViewSe
     def get_queryset(self):
         date_a_month_ago = datetime.now() - timedelta(days = 30)
         student = self.request.query_params.get('student')
-        queryset = Session.objects.filter(id_student = student, status = 1, date__gt = date_a_month_ago).values('id_tutor__id__first_name').distinct()
+        queryset = Session.objects.filter(id_student = student, status = 3, date__gt = date_a_month_ago).values('id_tutor__id__first_name').distinct()
         return queryset
 
 class PendingTutorsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):

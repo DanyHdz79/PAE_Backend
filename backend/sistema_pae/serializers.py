@@ -113,7 +113,7 @@ class UserDataSerializer(Serializer):
 
 class AdminsSerializer(Serializer):
     id = IntegerField()
-    first_name = CharField()
+    id__first_name = CharField()
 
 class SubjectsByTutorSerializer(Serializer):
     id_subject__name = CharField()
