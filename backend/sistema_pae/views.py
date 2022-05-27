@@ -1,4 +1,5 @@
 from contextvars import Token
+from urllib import request
 from rest_framework.viewsets import ModelViewSet, ViewSet
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework import mixins, viewsets
@@ -151,7 +152,7 @@ class PendingSessionsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     model = Session
     serializer_class = SessionCardSerializer
     def get_queryset(self):
-        queryset = Session.objects.filter(status = 0).values('id', 'id_subject__name', 'id_tutor__id__first_name', 'id_tutor__id__email', 'id_student__id__first_name', 'id_student__id__email', 'date', 'spot', 'status', 'description', 'request_time')
+        queryset = Session.objects.filter(status = 0).values('id', 'id_subject__name', 'id_tutor__id__first_name', 'id_tutor__id__email', 'id_student__id__first_name', 'id_student__id__email', 'date', 'spot', 'status', 'description', 'request_time').order_by('request_time')
         return queryset
 
 class StudentsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
