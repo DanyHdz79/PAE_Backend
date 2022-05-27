@@ -98,6 +98,8 @@ class SessionCardSerializer(Serializer):
     date = DateTimeField()
     spot = CharField()
     status = IntegerField()
+    description = CharField()
+    request_time = DateTimeField()
 
 class UserDataSerializer(Serializer):
     id = IntegerField()
