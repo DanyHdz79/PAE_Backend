@@ -312,3 +312,17 @@ class SpecificSessionViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         if specific_id:
             queryset = queryset.filter(id = specific_id)
         return queryset
+
+class RecentCompletedSessionViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    permission_classes = (AllowAny, )
+    authentication_classes = (TokenAuthentication, )
+    model = Session
+    serializer_class = SessionCardSerializer
+    def get_queryset(self):
+        student = self.request.query_params.get('student')
+        tutor = self.request.query_params.get('tutor')
+        if student:
+            queryset = Session.objects.filter(id_student__id = student, status = 3).values('id', 'id_subject__name', 'id_tutor__id__first_name', 'id_tutor__id__email', 'id_student__id__first_name', 'id_student__id__email', 'date', 'spot', 'status', 'description', 'request_time').order_by('-date')[:1]
+        if tutor:
+            queryset = Session.objects.filter(id_tutor__id = tutor, status = 3).values('id', 'id_subject__name', 'id_tutor__id__first_name', 'id_tutor__id__email', 'id_student__id__first_name', 'id_student__id__email', 'date', 'spot', 'status', 'description', 'request_time').order_by('-date')[:1]
+        return queryset
