@@ -1,15 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-# Create your models here.
-""" class Admin(models.Model):
-    id = models.EmailField(primary_key=True)
-    name = models.CharField(max_length=100)
-    password = models.CharField(max_length=256) #ecrypt password
-
-    def __str__(self):
-        return self.id + ' ' + self.name """
-
 class Career(models.Model):
     id = models.CharField(max_length=5, primary_key=True)
     name = models.CharField(max_length=100)
@@ -91,7 +82,7 @@ class Session(models.Model):
     id_tutor = models.ForeignKey(PaeUser, null=True, on_delete=models.SET_NULL)
     id_student = models.ForeignKey(PaeUser, null=True, on_delete=models.SET_NULL, related_name='session_student')
     file = models.FileField(null=True)
-    status = models.IntegerField()
+    status = models.IntegerField() #0 - Pending  1 - Confirmed  2 - Cancelled  3 - Completed
     spot = models.CharField(max_length=50, null=True)
     request_time = models.DateTimeField()
     verify_time = models.DateTimeField(null=True)

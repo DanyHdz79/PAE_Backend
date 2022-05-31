@@ -1,6 +1,6 @@
 from ast import Or
 from django.urls import path
-from .views import CareersViewSet, ChoicesViewSet, SurveysViewSet, UsersViewSet, QuestionsViewSet, SubjectsViewSet, SessionsViewSet, SchedulesViewSet, AnswersViewSet, TutorSubjectsViewSet, AvailableSessionsViewSet, PaeUsersViewSet, SessionsOfSpecificStudentViewSet, SessionsOfSpecificTutorViewSet, PendingSessionsViewSet, OrderedTutorsForSessionViewSet, ServiceHoursViewSet, StudentsViewSet, TutorsViewSet, SubjectsByTutorViewSet, ScheduleByTutorViewSet, AdminsViewSet, RecentTutorsOfStudentViewSet, CurrentUserDataViewSet, PendingTutorsViewSet, MostRecentSurveyForStudentsViewSet, MostRecentSurveyForTutorsViewSet, QuestionsOfSpecificSurveyViewSet, ChoicesOfSpecificQuestionViewSet, ScheduleByTutorAndDayHourViewSet, RecentSessionsOfStudentViewSet, RecentSessionsOfTutorViewSet
+from .views import CareersViewSet, ChoicesViewSet, SurveysViewSet, UsersViewSet, QuestionsViewSet, SubjectsViewSet, SessionsViewSet, SchedulesViewSet, AnswersViewSet, TutorSubjectsViewSet, AvailableSessionsViewSet, PaeUsersViewSet, SessionsOfSpecificStudentViewSet, SessionsOfSpecificTutorViewSet, PendingSessionsViewSet, OrderedTutorsForSessionViewSet, ServiceHoursViewSet, StudentsViewSet, TutorsViewSet, SubjectsByTutorViewSet, ScheduleByTutorViewSet, AdminsViewSet, RecentTutorsOfStudentViewSet, CurrentUserDataViewSet, PendingTutorsViewSet, MostRecentSurveyForStudentsViewSet, MostRecentSurveyForTutorsViewSet, QuestionsOfSpecificSurveyViewSet, ChoicesOfSpecificQuestionViewSet, ScheduleByTutorAndDayHourViewSet, RecentSessionsOfStudentViewSet, RecentSessionsOfTutorViewSet, SpecificSessionViewSet
 from rest_framework import routers
 
 router = routers.DefaultRouter()
@@ -38,5 +38,6 @@ router.register('choices_of_specific_question', ChoicesOfSpecificQuestionViewSet
 router.register('schedule_by_tutor_and_day_hour', ScheduleByTutorAndDayHourViewSet, basename='schedule_by_tutor_and_day_hour')
 router.register('recent_sessions_of_student', RecentSessionsOfStudentViewSet, basename='recent_sessions_of_student')
 router.register('recent_sessions_of_tutor', RecentSessionsOfTutorViewSet, basename='recent_sessions_of_tutor')
+router.register('specific_session', SpecificSessionViewSet, basename='specific_session')
 
 urlpatterns = router.urls

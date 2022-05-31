@@ -1,4 +1,5 @@
 from contextvars import Token
+from urllib import request
 from rest_framework.viewsets import ModelViewSet, ViewSet
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework import mixins, viewsets
@@ -118,7 +119,7 @@ class ServiceHoursViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     def get_queryset(self):
         tutor = self.request.query_params.get('tutor')
         if tutor:
-            queryset = TutorSubject.objects.filter(id_tutor = tutor).distinct().annotate(service_hours = Count('id_tutor__session', filter=Q(id_tutor__session__status = 1))).values('id_tutor__id__first_name', 'service_hours')
+            queryset = TutorSubject.objects.filter(id_tutor = tutor).distinct().annotate(service_hours = Count('id_tutor__session', filter=Q(id_tutor__session__status = 3))).values('id_tutor__id__first_name', 'service_hours')
             return queryset
 
 class SessionsOfSpecificStudentViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
@@ -127,7 +128,7 @@ class SessionsOfSpecificStudentViewSet(mixins.ListModelMixin, viewsets.GenericVi
     model = Session
     serializer_class = SessionCardSerializer
     def get_queryset(self):
-        queryset = Session.objects.all().values('id', 'id_subject__name', 'id_tutor__id__first_name', 'id_tutor__id__email', 'id_student__id__first_name', 'id_student__id__email', 'date', 'spot', 'status')
+        queryset = Session.objects.all().values('id', 'id_subject__name', 'id_tutor__id__first_name', 'id_tutor__id__email', 'id_student__id__first_name', 'id_student__id__email', 'date', 'spot', 'status', 'description', 'request_time')
         student = self.request.query_params.get('student')
         if student:
             queryset = queryset.filter(id_student__id = student)
@@ -139,7 +140,7 @@ class SessionsOfSpecificTutorViewSet(mixins.ListModelMixin, viewsets.GenericView
     model = Session
     serializer_class = SessionCardSerializer
     def get_queryset(self):
-        queryset = Session.objects.all().values('id', 'id_subject__name', 'id_tutor__id__first_name', 'id_tutor__id__email', 'id_student__id__first_name', 'id_student__id__email', 'date', 'spot', 'status')
+        queryset = Session.objects.all().values('id', 'id_subject__name', 'id_tutor__id__first_name', 'id_tutor__id__email', 'id_student__id__first_name', 'id_student__id__email', 'date', 'spot', 'status', 'description', 'request_time')
         tutor = self.request.query_params.get('tutor')
         if tutor:
             queryset = queryset.filter(id_tutor__id = tutor)
@@ -151,7 +152,7 @@ class PendingSessionsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     model = Session
     serializer_class = SessionCardSerializer
     def get_queryset(self):
-        queryset = Session.objects.filter(status = 0).values('id', 'id_subject__name', 'id_tutor__id__first_name', 'id_tutor__id__email', 'id_student__id__first_name', 'id_student__id__email', 'date', 'spot', 'status')
+        queryset = Session.objects.filter(status = 0).values('id', 'id_subject__name', 'id_tutor__id__first_name', 'id_tutor__id__email', 'id_student__id__first_name', 'id_student__id__email', 'date', 'spot', 'status', 'description', 'request_time').order_by('request_time')
         return queryset
 
 class StudentsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
@@ -285,7 +286,7 @@ class RecentSessionsOfStudentViewSet(mixins.ListModelMixin, viewsets.GenericView
         today = datetime.date.today()
         previousMonday = today - datetime.timedelta(days = today.weekday())
         student = self.request.query_params.get('student')
-        queryset = Session.objects.filter(id_student__id = student, date__gte = previousMonday).values('id', 'id_subject__name', 'id_tutor__id__first_name', 'id_tutor__id__email', 'id_student__id__first_name', 'id_student__id__email', 'date', 'spot', 'status')
+        queryset = Session.objects.filter(id_student__id = student, date__gte = previousMonday).values('id', 'id_subject__name', 'id_tutor__id__first_name', 'id_tutor__id__email', 'id_student__id__first_name', 'id_student__id__email', 'date', 'spot', 'status', 'description', 'request_time')
         return queryset
 
 class RecentSessionsOfTutorViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
@@ -297,5 +298,17 @@ class RecentSessionsOfTutorViewSet(mixins.ListModelMixin, viewsets.GenericViewSe
         today = datetime.date.today()
         previousMonday = today - datetime.timedelta(days = today.weekday())
         tutor = self.request.query_params.get('tutor')
-        queryset = Session.objects.filter(id_tutor__id = tutor, date__gte = previousMonday).values('id', 'id_subject__name', 'id_tutor__id__first_name', 'id_tutor__id__email', 'id_student__id__first_name', 'id_student__id__email', 'date', 'spot', 'status')
+        queryset = Session.objects.filter(id_tutor__id = tutor, date__gte = previousMonday).values('id', 'id_subject__name', 'id_tutor__id__first_name', 'id_tutor__id__email', 'id_student__id__first_name', 'id_student__id__email', 'date', 'spot', 'status', 'description', 'request_time')
+        return queryset
+
+class SpecificSessionViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    permission_classes = (AllowAny, )
+    authentication_classes = (TokenAuthentication, )
+    model = Session
+    serializer_class = SessionCardSerializer
+    def get_queryset(self):
+        specific_id = self.request.query_params.get('id')
+        queryset = Session.objects.all().values('id', 'id_subject__name', 'id_tutor__id__first_name', 'id_tutor__id__email', 'id_student__id__first_name', 'id_student__id__email', 'date', 'spot', 'status', 'description', 'request_time')
+        if specific_id:
+            queryset = queryset.filter(id = specific_id)
         return queryset
