@@ -286,7 +286,7 @@ class RecentSessionsOfStudentViewSet(mixins.ListModelMixin, viewsets.GenericView
         today = datetime.date.today()
         previousMonday = today - datetime.timedelta(days = today.weekday())
         student = self.request.query_params.get('student')
-        queryset = Session.objects.filter(id_student__id = student, date__gte = previousMonday).values('id', 'id_subject__name', 'id_tutor__id__first_name', 'id_tutor__id__email', 'id_student__id__first_name', 'id_student__id__email', 'date', 'spot', 'status', 'description', 'request_time')
+        queryset = Session.objects.filter(id_student__id = student, date__gte = previousMonday).values('id', 'id_subject__name', 'id_tutor__id__first_name', 'id_tutor__id__email', 'id_student__id__first_name', 'id_student__id__email', 'date', 'spot', 'status', 'description', 'request_time').order_by('date')
         return queryset
 
 class RecentSessionsOfTutorViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
@@ -298,7 +298,7 @@ class RecentSessionsOfTutorViewSet(mixins.ListModelMixin, viewsets.GenericViewSe
         today = datetime.date.today()
         previousMonday = today - datetime.timedelta(days = today.weekday())
         tutor = self.request.query_params.get('tutor')
-        queryset = Session.objects.filter(id_tutor__id = tutor, date__gte = previousMonday).values('id', 'id_subject__name', 'id_tutor__id__first_name', 'id_tutor__id__email', 'id_student__id__first_name', 'id_student__id__email', 'date', 'spot', 'status', 'description', 'request_time')
+        queryset = Session.objects.filter(id_tutor__id = tutor, date__gte = previousMonday).values('id', 'id_subject__name', 'id_tutor__id__first_name', 'id_tutor__id__email', 'id_student__id__first_name', 'id_student__id__email', 'date', 'spot', 'status', 'description', 'request_time').order_by('date')
         return queryset
 
 class SpecificSessionViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
