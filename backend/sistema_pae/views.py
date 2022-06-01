@@ -8,7 +8,7 @@ from django.contrib.auth.models import User
 from django.db.models import Count, Q
 import datetime
 from .models import Career, Survey, PaeUser, Question, Subject, Session, Schedule, Answer, TutorSubject, Choice
-from .serializers import CareerSerializer, SessionCardSerializer, SurveySerializer, UserSerializer, PaeUserSerializer, QuestionSerializer, SubjectSerializer, SessionSerializer, ScheduleSerializer, AnswerSerializer, TutorSubjectSerializer, SessionAvailabilitySerializer, SessionCardSerializer, OrderedTutorsForSpecificSessionSerializer, ServiceHoursSerializer, UserDataSerializer, SubjectsByTutorSerializer, ScheduleByTutorSerializer, AdminsSerializer, RecentTutorsOfStudentSerializer, CurrentUserDataSerializer, ChoiceSerializer
+from .serializers import CareerSerializer, SessionCardSerializer, SurveySerializer, UserSerializer, PaeUserSerializer, QuestionSerializer, SubjectSerializer, SessionSerializer, ScheduleSerializer, AnswerSerializer, TutorSubjectSerializer, SessionAvailabilitySerializer, SessionCardSerializer, OrderedTutorsForSpecificSessionSerializer, ServiceHoursSerializer, UserDataSerializer, SubjectsByTutorSerializer, ScheduleByTutorSerializer, AdminsSerializer, RecentTutorsOfStudentSerializer, CurrentUserDataSerializer, ChoiceSerializer, RecentCompletedSessionSerializer
 
 # SELECT * queries
 class CareersViewSet(ModelViewSet):
@@ -317,12 +317,12 @@ class RecentCompletedSessionViewSet(mixins.ListModelMixin, viewsets.GenericViewS
     permission_classes = (AllowAny, )
     authentication_classes = (TokenAuthentication, )
     model = Session
-    serializer_class = SessionCardSerializer
+    serializer_class = RecentCompletedSessionSerializer
     def get_queryset(self):
         student = self.request.query_params.get('student')
         tutor = self.request.query_params.get('tutor')
         if student:
-            queryset = Session.objects.filter(id_student__id = student, status = 3).values('id', 'id_subject__name', 'id_tutor__id__first_name', 'id_tutor__id__email', 'id_student__id__first_name', 'id_student__id__email', 'date', 'spot', 'status', 'description', 'request_time').order_by('-date')[:1]
+            queryset = Session.objects.filter(id_student__id = student, status = 3).values('id', 'id_tutor', 'id_student').order_by('-date')[:1]
         if tutor:
-            queryset = Session.objects.filter(id_tutor__id = tutor, status = 3).values('id', 'id_subject__name', 'id_tutor__id__first_name', 'id_tutor__id__email', 'id_student__id__first_name', 'id_student__id__email', 'date', 'spot', 'status', 'description', 'request_time').order_by('-date')[:1]
+            queryset = Session.objects.filter(id_tutor__id = tutor, status = 3).values('id', 'id_tutor', 'id_student').order_by('-date')[:1]
         return queryset

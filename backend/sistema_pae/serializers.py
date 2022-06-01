@@ -120,3 +120,8 @@ class ScheduleByTutorSerializer(Serializer):
 
 class RecentTutorsOfStudentSerializer(Serializer):
     id_tutor__id__first_name = CharField()
+
+class RecentCompletedSessionSerializer(Serializer):
+    id = IntegerField()
+    id_tutor = CharField()
+    id_student = CharField()
