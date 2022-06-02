@@ -89,7 +89,7 @@ class Session(models.Model):
     id_admin_verify = models.ForeignKey(PaeUser, null=True, on_delete=models.SET_NULL, related_name='id_admin_verify')
 
     def __str__(self):
-        return self.id_subject + ' - ' + self.date + ' - ' + self.id_tutor + ' - ' + self.id_student + ' - ' + self.status
+        return str(self.id_subject) + ' - ' + str(self.date) + ' - ' + str(self.id_tutor) + ' - ' + str(self.id_student) + ' - ' + str(self.status)
 
 
 

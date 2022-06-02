@@ -128,7 +128,7 @@ class SessionsOfSpecificStudentViewSet(mixins.ListModelMixin, viewsets.GenericVi
     model = Session
     serializer_class = SessionCardSerializer
     def get_queryset(self):
-        queryset = Session.objects.all().values('id', 'id_subject__name', 'id_tutor__id__first_name', 'id_tutor__id__email', 'id_student__id__first_name', 'id_student__id__email', 'date', 'spot', 'status', 'description', 'request_time')
+        queryset = Session.objects.all().values('id', 'id_subject__name', 'id_tutor__id__first_name', 'id_tutor__id__email', 'id_student__id__first_name', 'id_student__id__email', 'date', 'spot', 'status', 'description', 'request_time').order_by('-date')
         student = self.request.query_params.get('student')
         if student:
             queryset = queryset.filter(id_student__id = student)
@@ -140,7 +140,7 @@ class SessionsOfSpecificTutorViewSet(mixins.ListModelMixin, viewsets.GenericView
     model = Session
     serializer_class = SessionCardSerializer
     def get_queryset(self):
-        queryset = Session.objects.all().values('id', 'id_subject__name', 'id_tutor__id__first_name', 'id_tutor__id__email', 'id_student__id__first_name', 'id_student__id__email', 'date', 'spot', 'status', 'description', 'request_time')
+        queryset = Session.objects.all().values('id', 'id_subject__name', 'id_tutor__id__first_name', 'id_tutor__id__email', 'id_student__id__first_name', 'id_student__id__email', 'date', 'spot', 'status', 'description', 'request_time').order_by('-date')
         tutor = self.request.query_params.get('tutor')
         if tutor:
             queryset = queryset.filter(id_tutor__id = tutor)
