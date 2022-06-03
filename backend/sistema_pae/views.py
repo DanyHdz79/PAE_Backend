@@ -5,10 +5,10 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework import mixins, viewsets
 from rest_framework.authentication import TokenAuthentication
 from django.contrib.auth.models import User
-from django.db.models import Count, Q
+from django.db.models import Count, Q, ExpressionWrapper, BooleanField
 import datetime
 from .models import Career, Survey, PaeUser, Question, Subject, Session, Schedule, Answer, TutorSubject, Choice
-from .serializers import CareerSerializer, SessionCardSerializer, SurveySerializer, UserSerializer, PaeUserSerializer, QuestionSerializer, SubjectSerializer, SessionSerializer, ScheduleSerializer, AnswerSerializer, TutorSubjectSerializer, SessionAvailabilitySerializer, SessionCardSerializer, OrderedTutorsForSpecificSessionSerializer, ServiceHoursSerializer, UserDataSerializer, SubjectsByTutorSerializer, ScheduleByTutorSerializer, AdminsSerializer, RecentTutorsOfStudentSerializer, CurrentUserDataSerializer, ChoiceSerializer, RecentCompletedSessionSerializer
+from .serializers import CareerSerializer, SessionCardSerializer, SessionCardCancelValueSerializer, SurveySerializer, UserSerializer, PaeUserSerializer, QuestionSerializer, SubjectSerializer, SessionSerializer, ScheduleSerializer, AnswerSerializer, TutorSubjectSerializer, SessionAvailabilitySerializer, OrderedTutorsForSpecificSessionSerializer, ServiceHoursSerializer, UserDataSerializer, SubjectsByTutorSerializer, ScheduleByTutorSerializer, AdminsSerializer, RecentTutorsOfStudentSerializer, CurrentUserDataSerializer, ChoiceSerializer, RecentCompletedSessionSerializer
 
 # SELECT * queries
 class CareersViewSet(ModelViewSet):
@@ -128,7 +128,7 @@ class SessionsOfSpecificStudentViewSet(mixins.ListModelMixin, viewsets.GenericVi
     model = Session
     serializer_class = SessionCardSerializer
     def get_queryset(self):
-        queryset = Session.objects.all().values('id', 'id_subject__name', 'id_tutor__id__first_name', 'id_tutor__id__email', 'id_student__id__first_name', 'id_student__id__email', 'date', 'spot', 'status', 'description', 'request_time').order_by('-date')
+        queryset = Session.objects.all().values('id', 'id_subject__name', 'id_tutor__id__first_name', 'id_tutor__id__email', 'id_student__id__first_name', 'id_student__id__email', 'date', 'spot', 'status', 'description', 'request_time', 'file').order_by('-date')
         student = self.request.query_params.get('student')
         if student:
             queryset = queryset.filter(id_student__id = student)
@@ -140,7 +140,7 @@ class SessionsOfSpecificTutorViewSet(mixins.ListModelMixin, viewsets.GenericView
     model = Session
     serializer_class = SessionCardSerializer
     def get_queryset(self):
-        queryset = Session.objects.all().values('id', 'id_subject__name', 'id_tutor__id__first_name', 'id_tutor__id__email', 'id_student__id__first_name', 'id_student__id__email', 'date', 'spot', 'status', 'description', 'request_time').order_by('-date')
+        queryset = Session.objects.all().values('id', 'id_subject__name', 'id_tutor__id__first_name', 'id_tutor__id__email', 'id_student__id__first_name', 'id_student__id__email', 'date', 'spot', 'status', 'description', 'request_time', 'file').order_by('-date')
         tutor = self.request.query_params.get('tutor')
         if tutor:
             queryset = queryset.filter(id_tutor__id = tutor)
@@ -150,9 +150,10 @@ class PendingSessionsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     permission_classes = (AllowAny, )
     authentication_classes = (TokenAuthentication, )
     model = Session
-    serializer_class = SessionCardSerializer
+    serializer_class = SessionCardCancelValueSerializer
     def get_queryset(self):
-        queryset = Session.objects.filter(status = 0).values('id', 'id_subject__name', 'id_tutor__id__first_name', 'id_tutor__id__email', 'id_student__id__first_name', 'id_student__id__email', 'date', 'spot', 'status', 'description', 'request_time').order_by('request_time')
+        cancellationLimitTime = datetime.datetime.now() + datetime.timedelta(hours = 3)
+        queryset = Session.objects.filter(status = 0).annotate(cancel = ExpressionWrapper(Q(date__gte = cancellationLimitTime), output_field = BooleanField())).values('id', 'id_subject__name', 'id_tutor__id__first_name', 'id_tutor__id__email', 'id_student__id__first_name', 'id_student__id__email', 'date', 'spot', 'status', 'description', 'request_time', 'file', 'cancel').order_by('request_time')
         return queryset
 
 class StudentsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
@@ -214,7 +215,7 @@ class RecentTutorsOfStudentViewSet(mixins.ListModelMixin, viewsets.GenericViewSe
     model = Session
     serializer_class = RecentTutorsOfStudentSerializer
     def get_queryset(self):
-        date_a_month_ago = datetime.date.today()- datetime.timedelta(days = 30)
+        date_a_month_ago = datetime.date.today() - datetime.timedelta(days = 30)
         student = self.request.query_params.get('student')
         queryset = Session.objects.filter(id_student = student, status = 3, date__gt = date_a_month_ago).values('id_tutor__id__first_name').distinct()
         return queryset
@@ -281,24 +282,26 @@ class RecentSessionsOfStudentViewSet(mixins.ListModelMixin, viewsets.GenericView
     permission_classes = (AllowAny, )
     authentication_classes = (TokenAuthentication, )
     model = Session
-    serializer_class = SessionCardSerializer
+    serializer_class = SessionCardCancelValueSerializer
     def get_queryset(self):
         today = datetime.date.today()
         previousMonday = today - datetime.timedelta(days = today.weekday())
         student = self.request.query_params.get('student')
-        queryset = Session.objects.filter(~Q(status = 2), id_student__id = student, date__gte = previousMonday).values('id', 'id_subject__name', 'id_tutor__id__first_name', 'id_tutor__id__email', 'id_student__id__first_name', 'id_student__id__email', 'date', 'spot', 'status', 'description', 'request_time').order_by('date')
+        cancellationLimitTime = datetime.datetime.now() + datetime.timedelta(hours = 3)
+        queryset = Session.objects.filter(~Q(status = 2), id_student__id = student, date__gte = previousMonday).annotate(cancel = ExpressionWrapper(Q(date__gte = cancellationLimitTime), output_field = BooleanField())).values('id', 'id_subject__name', 'id_tutor__id__first_name', 'id_tutor__id__email', 'id_student__id__first_name', 'id_student__id__email', 'date', 'spot', 'status', 'description', 'request_time', 'file', 'cancel').order_by('date')
         return queryset
 
 class RecentSessionsOfTutorViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     permission_classes = (AllowAny, )
     authentication_classes = (TokenAuthentication, )
     model = Session
-    serializer_class = SessionCardSerializer
+    serializer_class = SessionCardCancelValueSerializer
     def get_queryset(self):
         today = datetime.date.today()
         previousMonday = today - datetime.timedelta(days = today.weekday())
         tutor = self.request.query_params.get('tutor')
-        queryset = Session.objects.filter(~Q(status = 2), id_tutor__id = tutor, date__gte = previousMonday).values('id', 'id_subject__name', 'id_tutor__id__first_name', 'id_tutor__id__email', 'id_student__id__first_name', 'id_student__id__email', 'date', 'spot', 'status', 'description', 'request_time').order_by('date')
+        cancellationLimitTime = datetime.datetime.now() + datetime.timedelta(hours = 3)
+        queryset = Session.objects.filter(~Q(status = 2), id_tutor__id = tutor, date__gte = previousMonday).annotate(cancel = ExpressionWrapper(Q(date__gte = cancellationLimitTime), output_field = BooleanField())).values('id', 'id_subject__name', 'id_tutor__id__first_name', 'id_tutor__id__email', 'id_student__id__first_name', 'id_student__id__email', 'date', 'spot', 'status', 'description', 'request_time', 'file', 'cancel').order_by('date')
         return queryset
 
 class SpecificSessionViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
@@ -308,7 +311,7 @@ class SpecificSessionViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = SessionCardSerializer
     def get_queryset(self):
         specific_id = self.request.query_params.get('id')
-        queryset = Session.objects.all().values('id', 'id_subject__name', 'id_tutor__id__first_name', 'id_tutor__id__email', 'id_student__id__first_name', 'id_student__id__email', 'date', 'spot', 'status', 'description', 'request_time')
+        queryset = Session.objects.all().values('id', 'id_subject__name', 'id_tutor__id__first_name', 'id_tutor__id__email', 'id_student__id__first_name', 'id_student__id__email', 'date', 'spot', 'status', 'description', 'request_time', 'file')
         if specific_id:
             queryset = queryset.filter(id = specific_id)
         return queryset

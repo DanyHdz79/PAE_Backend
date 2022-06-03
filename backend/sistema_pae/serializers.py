@@ -1,7 +1,7 @@
 from dataclasses import field
 from xmlrpc.client import DateTime
 from django.contrib.auth.models import User
-from rest_framework.serializers import Serializer, ModelSerializer, ALL_FIELDS, CharField, IntegerField, EmailField, DateTimeField, BooleanField
+from rest_framework.serializers import Serializer, ModelSerializer, ALL_FIELDS, CharField, IntegerField, EmailField, DateTimeField, BooleanField, FileField
 from .models import Career, Survey, PaeUser, Question, Subject, Session, Schedule, Answer, TutorSubject, Choice
 from rest_framework.authtoken.models import Token
 
@@ -100,6 +100,22 @@ class SessionCardSerializer(Serializer):
     status = IntegerField()
     description = CharField()
     request_time = DateTimeField()
+    file = FileField()
+
+class SessionCardCancelValueSerializer(Serializer):
+    id = IntegerField()
+    id_subject__name = CharField()
+    id_tutor__id__first_name = CharField()
+    id_tutor__id__email = EmailField()
+    id_student__id__first_name = CharField()
+    id_student__id__email = EmailField()
+    date = DateTimeField()
+    spot = CharField()
+    status = IntegerField()
+    description = CharField()
+    request_time = DateTimeField()
+    file = FileField()
+    cancel = BooleanField()
 
 class UserDataSerializer(Serializer):
     id = IntegerField()
