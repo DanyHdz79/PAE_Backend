@@ -169,7 +169,7 @@ class StudentsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = UserDataSerializer
     def get_queryset(self):
         student = self.request.query_params.get('student')
-        queryset = PaeUser.objects.filter(user_type = 0).values('id', 'id__first_name', 'career', 'semester')
+        queryset = PaeUser.objects.filter(user_type = 0).values('id', 'id__first_name', 'career', 'semester', 'id__email')
         if (student):
             queryset = queryset.filter(id = student)
         return queryset
@@ -181,7 +181,7 @@ class TutorsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = UserDataSerializer
     def get_queryset(self):
         tutor = self.request.query_params.get('tutor')
-        queryset = PaeUser.objects.filter(~Q(status = 2), user_type = 1).values('id', 'id__first_name', 'career', 'semester')
+        queryset = PaeUser.objects.filter(~Q(status = 2), user_type = 1).values('id', 'id__first_name', 'career', 'semester', 'id__email')
         if (tutor):
             queryset = queryset.filter(id = tutor)
         return queryset
@@ -192,7 +192,7 @@ class AdminsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     model = PaeUser
     serializer_class = UserDataSerializer
     def get_queryset(self):
-        queryset = PaeUser.objects.filter(user_type = 2).values('id', 'id__first_name')
+        queryset = PaeUser.objects.filter(user_type = 2).values('id', 'id__first_name', 'career', 'semester', 'id__email')
         return queryset
 
 class SubjectsByTutorViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
@@ -232,7 +232,7 @@ class PendingTutorsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     model = PaeUser
     serializer_class = UserDataSerializer
     def get_queryset(self):
-        queryset = PaeUser.objects.filter(user_type = 1, status = 2).values('id', 'id__first_name', 'career', 'semester')
+        queryset = PaeUser.objects.filter(user_type = 1, status = 2).values('id', 'id__first_name', 'career', 'semester', 'id__email')
         return queryset
 
 class MostRecentSurveyForStudentsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):

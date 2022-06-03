@@ -127,6 +127,7 @@ class UserDataSerializer(Serializer):
     id__first_name = CharField()
     career = CharField()
     semester = IntegerField()
+    id__email = EmailField()
 
 class AdminsSerializer(Serializer):
     id = IntegerField()
