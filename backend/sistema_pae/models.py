@@ -73,7 +73,7 @@ class Answer(models.Model):
     answer = models.JSONField()
 
     def __str__(self):
-        return self.id_question + ' - ' + self.id_student + ' - ' + self.id_tutor + ' - ' + self.date + ' ' + self.answer
+        return str(self.id_question) + ' - ' + str(self.id_student) + ' - ' + str(self.id_tutor) + ' - ' + str(self.date) + ' ' + self.answer
 
 class Session(models.Model):
     id_subject = models.ForeignKey(Subject, null=True, on_delete=models.SET_NULL)
