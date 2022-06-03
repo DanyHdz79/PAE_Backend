@@ -56,6 +56,11 @@ class SessionSerializer(ModelSerializer):
         model = Session
         fields = ALL_FIELDS
 
+class SessionsFilesSerializer(ModelSerializer):
+    class Meta:
+        model = Session
+        fields = ['id', 'file']
+
 class ScheduleSerializer(ModelSerializer):
     class Meta:
         model = Schedule

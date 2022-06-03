@@ -8,7 +8,7 @@ from django.contrib.auth.models import User
 from django.db.models import Count, Q, ExpressionWrapper, BooleanField
 import datetime
 from .models import Career, Survey, PaeUser, Question, Subject, Session, Schedule, Answer, TutorSubject, Choice
-from .serializers import CareerSerializer, SessionCardSerializer, SessionCardCancelValueSerializer, SurveySerializer, UserSerializer, PaeUserSerializer, QuestionSerializer, SubjectSerializer, SessionSerializer, ScheduleSerializer, AnswerSerializer, TutorSubjectSerializer, SessionAvailabilitySerializer, OrderedTutorsForSpecificSessionSerializer, ServiceHoursSerializer, UserDataSerializer, SubjectsByTutorSerializer, ScheduleByTutorSerializer, AdminsSerializer, RecentTutorsOfStudentSerializer, CurrentUserDataSerializer, ChoiceSerializer, RecentCompletedSessionSerializer
+from .serializers import CareerSerializer, SessionCardSerializer, SessionCardCancelValueSerializer, SessionsFilesSerializer, SurveySerializer, UserSerializer, PaeUserSerializer, QuestionSerializer, SubjectSerializer, SessionSerializer, ScheduleSerializer, AnswerSerializer, TutorSubjectSerializer, SessionAvailabilitySerializer, OrderedTutorsForSpecificSessionSerializer, ServiceHoursSerializer, UserDataSerializer, SubjectsByTutorSerializer, ScheduleByTutorSerializer, AdminsSerializer, RecentTutorsOfStudentSerializer, CurrentUserDataSerializer, ChoiceSerializer, RecentCompletedSessionSerializer
 
 # SELECT * queries
 class CareersViewSet(ModelViewSet):
@@ -60,6 +60,12 @@ class TutorSubjectsViewSet(ModelViewSet):
 class SessionsViewSet(ModelViewSet):
     queryset = Session.objects.all()
     serializer_class = SessionSerializer
+    authentication_classes = (TokenAuthentication, )
+    permission_classes = (AllowAny, )
+
+class SessionsFilesViewSet(ModelViewSet):
+    queryset = Session.objects.all()
+    serializer_class = SessionsFilesSerializer
     authentication_classes = (TokenAuthentication, )
     permission_classes = (AllowAny, )
 
