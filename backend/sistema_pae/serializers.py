@@ -105,7 +105,7 @@ class SessionCardSerializer(Serializer):
     status = IntegerField()
     description = CharField()
     request_time = DateTimeField()
-    file = FileField()
+    file = CharField()
 
 class SessionCardCancelValueSerializer(Serializer):
     id = IntegerField()
@@ -119,7 +119,7 @@ class SessionCardCancelValueSerializer(Serializer):
     status = IntegerField()
     description = CharField()
     request_time = DateTimeField()
-    file = FileField()
+    file = CharField()
     cancel = BooleanField()
 
 class UserDataSerializer(Serializer):
