@@ -8,7 +8,7 @@ from django.contrib.auth.models import User
 from django.db.models import Count, Q, ExpressionWrapper, BooleanField
 import datetime
 from .models import Career, Survey, PaeUser, Question, Subject, Session, Schedule, Answer, TutorSubject, Choice
-from .serializers import CareerSerializer, SessionCardSerializer, SessionCardCancelValueSerializer, SessionsFilesSerializer, SurveySerializer, UserSerializer, PaeUserSerializer, QuestionSerializer, SubjectSerializer, SessionSerializer, ScheduleSerializer, AnswerSerializer, TutorSubjectSerializer, SessionAvailabilitySerializer, OrderedTutorsForSpecificSessionSerializer, ServiceHoursSerializer, UserDataSerializer, SubjectsByTutorSerializer, ScheduleByTutorSerializer, AdminsSerializer, RecentTutorsOfStudentSerializer, CurrentUserDataSerializer, ChoiceSerializer, RecentCompletedSessionSerializer
+from .serializers import CareerSerializer, SessionCardSerializer, SessionCardCancelValueSerializer, SessionsFilesSerializer, SurveySerializer, UserSerializer, PaeUserSerializer, QuestionSerializer, SubjectSerializer, SessionSerializer, ScheduleSerializer, AnswerSerializer, TutorSubjectSerializer, SessionAvailabilitySerializer, OrderedTutorsForSpecificSessionSerializer, ServiceHoursSerializer, UserDataSerializer, SubjectsByTutorSerializer, ScheduleByTutorSerializer, AdminsSerializer, RecentTutorsOfStudentSerializer, CurrentUserDataSerializer, ChoiceSerializer, RecentCompletedSessionSerializer, AdminsEmailsSerializer
 
 # SELECT * queries
 class CareersViewSet(ModelViewSet):
@@ -334,4 +334,13 @@ class RecentCompletedSessionViewSet(mixins.ListModelMixin, viewsets.GenericViewS
             queryset = Session.objects.filter(id_student__id = student, status = 3).values('id', 'id_tutor', 'id_student').order_by('-date')[:1]
         if tutor:
             queryset = Session.objects.filter(id_tutor__id = tutor, status = 3).values('id', 'id_tutor', 'id_student').order_by('-date')[:1]
+        return queryset
+
+class AdminsEmailsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    permission_classes = (AllowAny, )
+    authentication_classes = (TokenAuthentication, )
+    model = PaeUser
+    serializer_class = AdminsEmailsSerializer
+    def get_queryset(self):
+        queryset = PaeUser.objects.filter(user_type = 2).values('id__email')
         return queryset

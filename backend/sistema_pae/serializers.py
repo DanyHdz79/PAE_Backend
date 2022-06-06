@@ -147,3 +147,6 @@ class RecentCompletedSessionSerializer(Serializer):
     id = IntegerField()
     id_tutor = CharField()
     id_student = CharField()
+
+class AdminsEmailsSerializer(Serializer):
+    id__email = EmailField()
