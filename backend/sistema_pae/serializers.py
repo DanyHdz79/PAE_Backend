@@ -147,3 +147,6 @@ class RecentCompletedSessionSerializer(Serializer):
 
 class AdminsEmailsSerializer(Serializer):
     id__email = EmailField()
+
+class ScheduleOfStudentSerializer(Serializer):
+    date = DateTimeField()

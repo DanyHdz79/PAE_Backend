@@ -5,10 +5,10 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework import mixins, viewsets
 from rest_framework.authentication import TokenAuthentication
 from django.contrib.auth.models import User
-from django.db.models import Count, Q, ExpressionWrapper, BooleanField
+from django.db.models import Count, Q, ExpressionWrapper, BooleanField, Value, CharField
 import datetime
 from .models import Career, Survey, PaeUser, Question, Subject, Session, Schedule, Answer, TutorSubject, Choice
-from .serializers import CareerSerializer, SessionCardSerializer, SessionCardCancelValueSerializer, SessionsFilesSerializer, SurveySerializer, UserSerializer, PaeUserSerializer, QuestionSerializer, SubjectSerializer, SessionSerializer, ScheduleSerializer, AnswerSerializer, TutorSubjectSerializer, SessionAvailabilitySerializer, OrderedTutorsForSpecificSessionSerializer, ServiceHoursSerializer, UserDataSerializer, SubjectsByTutorSerializer, ScheduleByTutorSerializer, AdminsSerializer, RecentTutorsOfStudentSerializer, CurrentUserDataSerializer, ChoiceSerializer, RecentCompletedSessionSerializer, AdminsEmailsSerializer
+from .serializers import CareerSerializer, SessionCardSerializer, SessionCardCancelValueSerializer, SessionsFilesSerializer, SurveySerializer, UserSerializer, PaeUserSerializer, QuestionSerializer, SubjectSerializer, SessionSerializer, ScheduleSerializer, AnswerSerializer, TutorSubjectSerializer, SessionAvailabilitySerializer, OrderedTutorsForSpecificSessionSerializer, ServiceHoursSerializer, UserDataSerializer, SubjectsByTutorSerializer, ScheduleByTutorSerializer, AdminsSerializer, RecentTutorsOfStudentSerializer, CurrentUserDataSerializer, ChoiceSerializer, RecentCompletedSessionSerializer, AdminsEmailsSerializer, ScheduleOfStudentSerializer
 
 # SELECT * queries
 class CareersViewSet(ModelViewSet):
@@ -118,7 +118,6 @@ class AvailableSessionsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         dayHour += dateStr[12]
         return dayHour
     def get_forbidden_hours(self, user):
-        print(user)
         forbidden_hours = []
         activeSessions = Session.objects.filter(Q(id_tutor = user) | Q(id_student = user), Q(status = 0) | Q(status = 1)).values_list('date', flat = True)
         for session in activeSessions:
@@ -374,4 +373,16 @@ class AdminsEmailsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = AdminsEmailsSerializer
     def get_queryset(self):
         queryset = PaeUser.objects.filter(user_type = 2).values('id__email')
+        return queryset
+
+class ScheduleOfStudentViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    permission_classes = (AllowAny, )
+    authentication_classes = (TokenAuthentication, )
+    model = Session
+    serializer_class = ScheduleOfStudentSerializer
+    def get_queryset(self):
+        today = datetime.date.today()
+        nextFriday = today + datetime.timedelta((4 - today.weekday()) % 7 + 1)
+        student = self.request.query_params.get('student')
+        queryset = Session.objects.filter(Q(status = 0) | Q(status = 1), id_student__id = student, date__gte = today, date__lte = nextFriday).values('date')
         return queryset
