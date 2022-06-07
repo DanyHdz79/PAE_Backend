@@ -8,7 +8,7 @@ from django.contrib.auth.models import User
 from django.db.models import Count, Q, ExpressionWrapper, BooleanField, Value, CharField
 import datetime
 from .models import Career, Survey, PaeUser, Question, Subject, Session, Schedule, Answer, TutorSubject, Choice
-from .serializers import CareerSerializer, SessionCardSerializer, SessionCardCancelValueSerializer, SessionsFilesSerializer, SurveySerializer, UserSerializer, PaeUserSerializer, QuestionSerializer, SubjectSerializer, SessionSerializer, ScheduleSerializer, AnswerSerializer, TutorSubjectSerializer, SessionAvailabilitySerializer, OrderedTutorsForSpecificSessionSerializer, ServiceHoursSerializer, UserDataSerializer, SubjectsByTutorSerializer, ScheduleByTutorSerializer, AdminsSerializer, RecentTutorsOfStudentSerializer, CurrentUserDataSerializer, ChoiceSerializer, RecentCompletedSessionSerializer, AdminsEmailsSerializer, ScheduleOfStudentSerializer
+from .serializers import CareerSerializer, SessionCardSerializer, SessionCardCancelValueSerializer, SessionsFilesSerializer, SurveySerializer, UserSerializer, PaeUserSerializer, QuestionSerializer, SubjectSerializer, SessionSerializer, ScheduleSerializer, AnswerSerializer, TutorSubjectSerializer, SessionAvailabilitySerializer, OrderedTutorsForSpecificSessionSerializer, ServiceHoursSerializer, UserDataSerializer, SubjectsByTutorSerializer, ScheduleByTutorSerializer, AdminsSerializer, RecentTutorsOfStudentSerializer, CurrentUserDataSerializer, ChoiceSerializer, RecentCompletedSessionSerializer, AdminsEmailsSerializer, ScheduleOfStudentSerializer, SubjectsByTutorSerializer
 
 # SELECT * queries
 class CareersViewSet(ModelViewSet):
@@ -232,7 +232,7 @@ class SubjectsByTutorViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = SubjectsByTutorSerializer
     def get_queryset(self):
         tutor = self.request.query_params.get('tutor')
-        queryset = TutorSubject.objects.filter(id_tutor = tutor).values('id_subject__name')
+        queryset = TutorSubject.objects.filter(id_tutor = tutor).values('id', 'id_subject__name')
         return queryset
 
 class ScheduleByTutorViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
@@ -242,7 +242,7 @@ class ScheduleByTutorViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = ScheduleByTutorSerializer
     def get_queryset(self):
         tutor = self.request.query_params.get('tutor')
-        queryset = Schedule.objects.filter(id_user = tutor).values('day_hour', 'available')
+        queryset = Schedule.objects.filter(id_user = tutor).values('id', 'day_hour', 'available')
         return queryset
 
 class RecentTutorsOfStudentViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
