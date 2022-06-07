@@ -78,10 +78,7 @@ class CurrentUserDataSerializer(Serializer):
     id__email = EmailField()
 
 class SessionAvailabilitySerializer(Serializer):
-    id = IntegerField()
-    id_tutor__id__username = CharField()
-    id_tutor__schedule__day_hour = CharField()
-    service_hours = IntegerField()        
+    day_hour = CharField()       
 
 class OrderedTutorsForSpecificSessionSerializer(Serializer):
     id_tutor__id = CharField()

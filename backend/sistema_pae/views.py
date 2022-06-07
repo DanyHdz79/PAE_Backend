@@ -96,13 +96,44 @@ class CurrentUserDataViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 class AvailableSessionsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     permission_classes = (AllowAny, )
     authentication_classes = (TokenAuthentication, )
-    model = TutorSubject
+    model = Schedule
     serializer_class = SessionAvailabilitySerializer
+    def get_day_hour(self, date):
+        dayHour = ""
+        date = date - datetime.timedelta(hours = 5)
+        dateStr = str(date)
+        day = date.weekday()
+        if day == 0:
+            dayHour += 'm'
+        elif day == 1:
+            dayHour += 't'
+        elif day == 2:
+            dayHour += 'w'
+        elif day == 3:
+            dayHour += 'th'
+        else:
+            dayHour += 'f'
+        if dateStr[11] != 0:
+            dayHour += dateStr[11]
+        dayHour += dateStr[12]
+        return dayHour
+    def get_forbidden_hours(self, user):
+        print(user)
+        forbidden_hours = []
+        activeSessions = Session.objects.filter(Q(id_tutor = user) | Q(id_student = user), Q(status = 0) | Q(status = 1)).values_list('date', flat = True)
+        for session in activeSessions:
+            newDayHour = self.get_day_hour(session)
+            forbidden_hours.append(newDayHour)
+        own_day_hours = Schedule.objects.filter(id_user = user).values_list('day_hour', flat = True)
+        for day_hour in own_day_hours:
+            forbidden_hours.append(day_hour)
+        return forbidden_hours
     def get_queryset(self):
-        queryset = TutorSubject.objects.filter(id_tutor__status = 0,id_tutor__schedule__available = True).annotate(service_hours = Count('id_tutor__session', filter=Q(id_tutor__session__status = 1))).order_by('service_hours').values('id', 'id_tutor__id__username', 'id_tutor__schedule__day_hour', 'service_hours')
         subject = self.request.query_params.get('subject')
-        if subject:
-            queryset = queryset.filter(id_subject = subject)
+        user = self.request.query_params.get('user')
+        if subject and user:
+            forbidden_hours = self.get_forbidden_hours(user)
+            queryset = Schedule.objects.filter(id_user__status = 0, id_user__tutorsubject__id_subject = subject, available = True).exclude(day_hour__in = forbidden_hours).values('day_hour')
         return queryset
 
 class OrderedTutorsForSessionViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
@@ -114,7 +145,7 @@ class OrderedTutorsForSessionViewSet(mixins.ListModelMixin, viewsets.GenericView
         subject = self.request.query_params.get('subject')
         dayHour = self.request.query_params.get('dayHour')
         if subject and dayHour:
-            queryset = TutorSubject.objects.filter(id_tutor__status = 0,id_tutor__schedule__available = True,id_subject = subject, id_tutor__schedule__day_hour = dayHour).annotate(service_hours = Count('id_tutor__session', filter=Q(id_tutor__session__status = 1))).order_by('service_hours').values('id_tutor__id', 'service_hours', 'id_subject', 'id_tutor__schedule__day_hour')[:1]
+            queryset = TutorSubject.objects.filter(id_tutor__status = 0,id_tutor__schedule__available = True, id_subject = subject, id_tutor__schedule__day_hour = dayHour).annotate(service_hours = Count('id_tutor__session', filter=Q(id_tutor__session__status = 1))).order_by('service_hours').values('id_tutor__id', 'service_hours', 'id_subject', 'id_tutor__schedule__day_hour')[:1]
             return queryset
 
 class ServiceHoursViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
@@ -307,7 +338,7 @@ class RecentSessionsOfTutorViewSet(mixins.ListModelMixin, viewsets.GenericViewSe
         previousMonday = today - datetime.timedelta(days = today.weekday())
         tutor = self.request.query_params.get('tutor')
         cancellationLimitTime = datetime.datetime.now() + datetime.timedelta(hours = 3)
-        queryset = Session.objects.filter(~Q(status = 2), id_tutor__id = tutor, date__gte = previousMonday).annotate(cancel = ExpressionWrapper(Q(date__gte = cancellationLimitTime), output_field = BooleanField())).values('id', 'id_subject__name', 'id_tutor__id__first_name', 'id_tutor__id__email', 'id_student__id__first_name', 'id_student__id__email', 'date', 'spot', 'status', 'description', 'request_time', 'file', 'cancel').order_by('date')
+        queryset = Session.objects.filter(~Q(status = 2), Q(id_tutor__id = tutor) | Q(id_student__id = tutor), date__gte = previousMonday).annotate(cancel = ExpressionWrapper(Q(date__gte = cancellationLimitTime), output_field = BooleanField())).values('id', 'id_subject__name', 'id_tutor__id__first_name', 'id_tutor__id__email', 'id_student__id__first_name', 'id_student__id__email', 'date', 'spot', 'status', 'description', 'request_time', 'file', 'cancel').order_by('date')
         return queryset
 
 class SpecificSessionViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
