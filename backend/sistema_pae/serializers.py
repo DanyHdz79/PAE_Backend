@@ -132,6 +132,7 @@ class AdminsSerializer(Serializer):
 
 class SubjectsByTutorSerializer(Serializer):
     id = IntegerField()
+    id_subject__id = CharField()
     id_subject__name = CharField()
 
 class ScheduleByTutorSerializer(Serializer):

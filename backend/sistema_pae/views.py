@@ -232,7 +232,7 @@ class SubjectsByTutorViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = SubjectsByTutorSerializer
     def get_queryset(self):
         tutor = self.request.query_params.get('tutor')
-        queryset = TutorSubject.objects.filter(id_tutor = tutor).values('id', 'id_subject__name')
+        queryset = TutorSubject.objects.filter(id_tutor = tutor).values('id', 'id_subject__id', 'id_subject__name')
         return queryset
 
 class ScheduleByTutorViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
