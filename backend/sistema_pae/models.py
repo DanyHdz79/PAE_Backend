@@ -56,24 +56,34 @@ class Question(models.Model):
     question_type = models.IntegerField() #0 - Open  1 - Multiple choice  2 - Scale  3 - File
 
     def __str__(self):
-        return str(self.id) + ' - ' + self.question
+         return str(self.id) + ' - ' + self.question
 
 class Choice(models.Model):
     id_question = models.ForeignKey(Question, on_delete=models.CASCADE)
     choice = models.CharField(max_length=100)
 
     def __str__(self):
-        return self.id_question + ' - ' + self.choice
+        return str(self.id_question) + ' - ' + self.choice
 
 class Answer(models.Model):
     id_question = models.ForeignKey(Question, on_delete=models.CASCADE)
     id_student = models.ForeignKey(PaeUser, null=True, on_delete=models.SET_NULL, related_name='student_answer')
     id_tutor = models.ForeignKey(PaeUser, null=True, on_delete=models.SET_NULL)
     date = models.DateTimeField()
-    answer = models.JSONField()
+    answer = models.TextField()
 
     def __str__(self):
-        return str(self.id_question) + ' - ' + str(self.id_student) + ' - ' + str(self.id_tutor) + ' - ' + str(self.date) + ' ' + self.answer
+        return str(self.id_question) + ' - ' + str(self.id_student) + ' - ' + str(self.id_tutor) + ' - ' + str(self.date) + ' ' + str(self.answer)
+
+class AnswerFile(models.Model):
+    id_question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    id_student = models.ForeignKey(PaeUser, null=True, on_delete=models.SET_NULL, related_name='student_answer_file')
+    id_tutor = models.ForeignKey(PaeUser, null=True, on_delete=models.SET_NULL)
+    date = models.DateTimeField()
+    answer = models.FileField()
+
+    def __str__(self):
+        return str(self.id_question) + ' - ' + str(self.id_student) + ' - ' + str(self.id_tutor) + ' - ' + str(self.date) + ' - ' + str(self.answer)
 
 class Session(models.Model):
     id_subject = models.ForeignKey(Subject, null=True, on_delete=models.SET_NULL)

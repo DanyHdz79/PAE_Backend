@@ -71,6 +71,11 @@ class AnswerSerializer(ModelSerializer):
         model = Answer
         fields = ALL_FIELDS
 
+class AnswerFileSerializer(ModelSerializer):
+    class Meta:
+        model = Answer
+        fields = ALL_FIELDS
+
 class CurrentUserDataSerializer(Serializer):
     id = IntegerField()
     user_type = IntegerField()
