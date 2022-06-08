@@ -1,8 +1,8 @@
 from dataclasses import field
 from xmlrpc.client import DateTime
 from django.contrib.auth.models import User
-from rest_framework.serializers import Serializer, ModelSerializer, ALL_FIELDS, CharField, IntegerField, EmailField, DateTimeField, BooleanField
-from .models import Career, Survey, PaeUser, Question, Subject, Session, Schedule, Answer, TutorSubject
+from rest_framework.serializers import Serializer, ModelSerializer, ALL_FIELDS, CharField, IntegerField, EmailField, DateTimeField, BooleanField, FileField
+from .models import AnswerFile, Career, Survey, PaeUser, Question, Subject, Session, Schedule, Answer, TutorSubject, Choice
 from rest_framework.authtoken.models import Token
 
 class CareerSerializer(ModelSerializer):
@@ -36,6 +36,11 @@ class QuestionSerializer(ModelSerializer):
         model = Question
         fields = ALL_FIELDS
 
+class ChoiceSerializer(ModelSerializer):
+    class Meta:
+        model = Choice
+        fields = ALL_FIELDS
+
 class SubjectSerializer(ModelSerializer):
     class Meta:
         model = Subject
@@ -51,6 +56,11 @@ class SessionSerializer(ModelSerializer):
         model = Session
         fields = ALL_FIELDS
 
+class SessionsFilesSerializer(ModelSerializer):
+    class Meta:
+        model = Session
+        fields = ['id', 'file']
+
 class ScheduleSerializer(ModelSerializer):
     class Meta:
         model = Schedule
@@ -61,25 +71,22 @@ class AnswerSerializer(ModelSerializer):
         model = Answer
         fields = ALL_FIELDS
 
+class AnswerFileSerializer(ModelSerializer):
+    class Meta:
+        model = AnswerFile
+        fields = ALL_FIELDS
+
 class CurrentUserDataSerializer(Serializer):
     id = IntegerField()
     user_type = IntegerField()
     status = IntegerField()
+    id__email = EmailField()
 
 class SessionAvailabilitySerializer(Serializer):
-    id = IntegerField()
-    id_tutor__id__username = CharField()
-    id_tutor__schedule__day_hour = CharField()
-    service_hours = IntegerField()        
-
-class SessionAvailabilitySerializer(Serializer):
-    id = IntegerField()
-    id_tutor__id__username = CharField()
-    id_tutor__schedule__day_hour = CharField()
-    service_hours = IntegerField()
+    day_hour = CharField()       
 
 class OrderedTutorsForSpecificSessionSerializer(Serializer):
-    id_tutor__id__first_name = CharField()
+    id_tutor__id = CharField()
     service_hours = IntegerField()
     id_subject = CharField()
     id_tutor__schedule__day_hour = CharField()
@@ -98,23 +105,56 @@ class SessionCardSerializer(Serializer):
     date = DateTimeField()
     spot = CharField()
     status = IntegerField()
+    description = CharField()
+    request_time = DateTimeField()
+    file = CharField()
+
+class SessionCardCancelValueSerializer(Serializer):
+    id = IntegerField()
+    id_subject__name = CharField()
+    id_tutor__id__first_name = CharField()
+    id_tutor__id__email = EmailField()
+    id_student__id__first_name = CharField()
+    id_student__id__email = EmailField()
+    date = DateTimeField()
+    spot = CharField()
+    status = IntegerField()
+    description = CharField()
+    request_time = DateTimeField()
+    file = CharField()
+    cancel = BooleanField()
 
 class UserDataSerializer(Serializer):
     id = IntegerField()
     id__first_name = CharField()
     career = CharField()
     semester = IntegerField()
+    id__email = EmailField()
 
 class AdminsSerializer(Serializer):
     id = IntegerField()
-    first_name = CharField()
+    id__first_name = CharField()
 
 class SubjectsByTutorSerializer(Serializer):
+    id = IntegerField()
+    id_subject__id = CharField()
     id_subject__name = CharField()
 
 class ScheduleByTutorSerializer(Serializer):
+    id = IntegerField()
     day_hour = CharField()
     available = BooleanField()
 
 class RecentTutorsOfStudentSerializer(Serializer):
     id_tutor__id__first_name = CharField()
+
+class RecentCompletedSessionSerializer(Serializer):
+    id = IntegerField()
+    id_tutor = CharField()
+    id_student = CharField()
+
+class AdminsEmailsSerializer(Serializer):
+    id__email = EmailField()
+
+class ScheduleOfStudentSerializer(Serializer):
+    date = DateTimeField()
