@@ -73,17 +73,17 @@ class Answer(models.Model):
     answer = models.TextField()
 
     def __str__(self):
-        return str(self.id_question) + ' - ' + str(self.id_student) + ' - ' + str(self.id_tutor) + ' - ' + str(self.date) + ' ' + str(self.answer)
+        return str(self.id_question) + ' - ' + str(self.id_student) + ' - ' + str(self.id_tutor) + ' - ' + str(self.date) + ' - ' + str(self.answer)
 
 class AnswerFile(models.Model):
     id_question = models.ForeignKey(Question, on_delete=models.CASCADE)
     id_student = models.ForeignKey(PaeUser, null=True, on_delete=models.SET_NULL, related_name='student_answer_file')
     id_tutor = models.ForeignKey(PaeUser, null=True, on_delete=models.SET_NULL)
     date = models.DateTimeField()
-    answer = models.FileField()
+    file = models.FileField()
 
     def __str__(self):
-        return str(self.id_question) + ' - ' + str(self.id_student) + ' - ' + str(self.id_tutor) + ' - ' + str(self.date) + ' - ' + str(self.answer)
+        return str(self.id_question) + ' - ' + str(self.id_student) + ' - ' + str(self.id_tutor) + ' - ' + str(self.date) + ' - ' + self.file
 
 class Session(models.Model):
     id_subject = models.ForeignKey(Subject, null=True, on_delete=models.SET_NULL)

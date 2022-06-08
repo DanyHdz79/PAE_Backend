@@ -2,7 +2,7 @@ from dataclasses import field
 from xmlrpc.client import DateTime
 from django.contrib.auth.models import User
 from rest_framework.serializers import Serializer, ModelSerializer, ALL_FIELDS, CharField, IntegerField, EmailField, DateTimeField, BooleanField, FileField
-from .models import Career, Survey, PaeUser, Question, Subject, Session, Schedule, Answer, TutorSubject, Choice
+from .models import AnswerFile, Career, Survey, PaeUser, Question, Subject, Session, Schedule, Answer, TutorSubject, Choice
 from rest_framework.authtoken.models import Token
 
 class CareerSerializer(ModelSerializer):
@@ -73,7 +73,7 @@ class AnswerSerializer(ModelSerializer):
 
 class AnswerFileSerializer(ModelSerializer):
     class Meta:
-        model = Answer
+        model = AnswerFile
         fields = ALL_FIELDS
 
 class CurrentUserDataSerializer(Serializer):
