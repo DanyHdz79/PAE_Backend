@@ -8,7 +8,7 @@ from django.contrib.auth.models import User
 from django.db.models import Count, Q, ExpressionWrapper, BooleanField, Value, CharField
 import datetime
 from .models import AnswerFile, Career, Survey, PaeUser, Question, Subject, Session, Schedule, Answer, TutorSubject, Choice
-from .serializers import AnswerFileSerializer, CareerSerializer, SessionCardSerializer, SessionCardCancelValueSerializer, SessionsFilesSerializer, SurveySerializer, UserSerializer, PaeUserSerializer, QuestionSerializer, SubjectSerializer, SessionSerializer, ScheduleSerializer, AnswerSerializer, TutorSubjectSerializer, SessionAvailabilitySerializer, OrderedTutorsForSpecificSessionSerializer, ServiceHoursSerializer, UserDataSerializer, SubjectsByTutorSerializer, ScheduleByTutorSerializer, RecentTutorsOfStudentSerializer, CurrentUserDataSerializer, ChoiceSerializer, RecentCompletedSessionSerializer, AdminsEmailsSerializer, ScheduleOfStudentSerializer, SubjectsByTutorSerializer
+from .serializers import AnswerFileSerializer, CareerSerializer, SessionCardSerializer, SessionCardCancelValueSerializer, SessionsFilesSerializer, SurveySerializer, UserSerializer, PaeUserSerializer, QuestionSerializer, SubjectSerializer, SessionSerializer, ScheduleSerializer, AnswerSerializer, TutorSubjectSerializer, SessionAvailabilitySerializer, OrderedTutorsForSpecificSessionSerializer, ServiceHoursSerializer, UserDataSerializer, SubjectsByTutorSerializer, ScheduleByTutorSerializer, RecentTutorsOfStudentSerializer, CurrentUserDataSerializer, ChoiceSerializer, RecentCompletedSessionSerializer, AdminsEmailsSerializer, ScheduleOfStudentSerializer, SubjectsByTutorSerializer, AnswersAboutUserSerializer
 
 # SELECT * queries
 class CareersViewSet(ModelViewSet):
@@ -407,14 +407,14 @@ class AnswersAboutUserViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     permission_classes = (AllowAny, )
     authentication_classes = (TokenAuthentication, )
     model = Answer
-    serializer_class = AnswerSerializer
+    serializer_class = AnswersAboutUserSerializer
     def get_queryset(self):
         student = self.request.query_params.get('student')
         tutor = self.request.query_params.get('tutor')
         if student:
-            queryset = Answer.objects.filter(id_student = student)
+            queryset = Answer.objects.filter(id_student = student).values('id_question', 'id_student', 'id_tutor', 'date', 'answer', 'id_student__id__first_name', 'id_tutor__id__first_name')
         if tutor:
-            queryset = Answer.objects.filter(id_tutor = tutor)
+            queryset = Answer.objects.filter(id_tutor = tutor).values('id_question', 'id_student', 'id_tutor', 'date', 'answer', 'id_student__id__first_name', 'id_tutor__id__first_name')
         return queryset
 
 class FilesAnswersAboutUserViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
