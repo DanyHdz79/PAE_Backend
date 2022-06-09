@@ -8,7 +8,7 @@ from django.contrib.auth.models import User
 from django.db.models import Count, Q, ExpressionWrapper, BooleanField, Value, CharField
 import datetime
 from .models import AnswerFile, Career, Survey, PaeUser, Question, Subject, Session, Schedule, Answer, TutorSubject, Choice
-from .serializers import AnswerFileSerializer, CareerSerializer, SessionCardSerializer, SessionCardCancelValueSerializer, SessionsFilesSerializer, SurveySerializer, UserSerializer, PaeUserSerializer, QuestionSerializer, SubjectSerializer, SessionSerializer, ScheduleSerializer, AnswerSerializer, TutorSubjectSerializer, SessionAvailabilitySerializer, OrderedTutorsForSpecificSessionSerializer, ServiceHoursSerializer, UserDataSerializer, SubjectsByTutorSerializer, ScheduleByTutorSerializer, AdminsSerializer, RecentTutorsOfStudentSerializer, CurrentUserDataSerializer, ChoiceSerializer, RecentCompletedSessionSerializer, AdminsEmailsSerializer, ScheduleOfStudentSerializer, SubjectsByTutorSerializer
+from .serializers import AnswerFileSerializer, CareerSerializer, SessionCardSerializer, SessionCardCancelValueSerializer, SessionsFilesSerializer, SurveySerializer, UserSerializer, PaeUserSerializer, QuestionSerializer, SubjectSerializer, SessionSerializer, ScheduleSerializer, AnswerSerializer, TutorSubjectSerializer, SessionAvailabilitySerializer, OrderedTutorsForSpecificSessionSerializer, ServiceHoursSerializer, UserDataSerializer, SubjectsByTutorSerializer, ScheduleByTutorSerializer, RecentTutorsOfStudentSerializer, CurrentUserDataSerializer, ChoiceSerializer, RecentCompletedSessionSerializer, AdminsEmailsSerializer, ScheduleOfStudentSerializer, SubjectsByTutorSerializer
 
 # SELECT * queries
 class CareersViewSet(ModelViewSet):
@@ -401,4 +401,32 @@ class SpecificUserViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     def get_queryset(self):
         user = self.request.query_params.get('user')
         queryset = PaeUser.objects.filter(id = user).values('id', 'id__first_name', 'user_type', 'career', 'semester', 'id__email', 'id__password', 'id__username')
+        return queryset
+
+class AnswersAboutUserViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    permission_classes = (AllowAny, )
+    authentication_classes = (TokenAuthentication, )
+    model = Answer
+    serializer_class = AnswerSerializer
+    def get_queryset(self):
+        student = self.request.query_params.get('student')
+        tutor = self.request.query_params.get('tutor')
+        if student:
+            queryset = Answer.objects.filter(id_student = student)
+        if tutor:
+            queryset = Answer.objects.filter(id_tutor = tutor)
+        return queryset
+
+class FilesAnswersAboutUserViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    permission_classes = (AllowAny, )
+    authentication_classes = (TokenAuthentication, )
+    model = AnswerFile
+    serializer_class = AnswerFileSerializer
+    def get_queryset(self):
+        student = self.request.query_params.get('student')
+        tutor = self.request.query_params.get('tutor')
+        if student:
+            queryset = AnswerFile.objects.filter(id_student = student)
+        if tutor:
+            queryset = AnswerFile.objects.filter(id_tutor = tutor)
         return queryset
