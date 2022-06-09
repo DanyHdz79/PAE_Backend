@@ -185,7 +185,7 @@ class SessionsOfSpecificTutorViewSet(mixins.ListModelMixin, viewsets.GenericView
         queryset = Session.objects.all().values('id', 'id_subject__name', 'id_tutor__id__first_name', 'id_tutor__id__email', 'id_student__id__first_name', 'id_student__id__email', 'date', 'spot', 'status', 'description', 'request_time', 'file').order_by('-date')
         tutor = self.request.query_params.get('tutor')
         if tutor:
-            queryset = queryset.filter(id_tutor__id = tutor)
+            queryset = queryset.filter(Q(id_tutor__id = tutor) | Q(id_student__id = tutor))
         return queryset
 
 class PendingSessionsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
