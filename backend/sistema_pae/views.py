@@ -205,7 +205,7 @@ class StudentsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = UserDataSerializer
     def get_queryset(self):
         student = self.request.query_params.get('student')
-        queryset = PaeUser.objects.filter(user_type = 0).values('id', 'id__first_name', 'career', 'semester', 'id__email')
+        queryset = PaeUser.objects.filter(user_type = 0).values('id', 'id__first_name', 'user_type', 'career', 'semester', 'id__email', 'id__password', 'id__username')
         if (student):
             queryset = queryset.filter(id = student)
         return queryset
@@ -217,7 +217,7 @@ class TutorsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = UserDataSerializer
     def get_queryset(self):
         tutor = self.request.query_params.get('tutor')
-        queryset = PaeUser.objects.filter(~Q(status = 2), user_type = 1).values('id', 'id__first_name', 'career', 'semester', 'id__email')
+        queryset = PaeUser.objects.filter(~Q(status = 2), user_type = 1).values('id', 'id__first_name', 'user_type', 'career', 'semester', 'id__email', 'id__password', 'id__username')
         if (tutor):
             queryset = queryset.filter(id = tutor)
         return queryset
@@ -228,7 +228,7 @@ class AdminsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     model = PaeUser
     serializer_class = UserDataSerializer
     def get_queryset(self):
-        queryset = PaeUser.objects.filter(user_type = 2).values('id', 'id__first_name', 'career', 'semester', 'id__email')
+        queryset = PaeUser.objects.filter(user_type = 2).values('id', 'id__first_name', 'user_type', 'career', 'semester', 'id__email', 'id__password', 'id__username')
         return queryset
 
 class SubjectsByTutorViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
@@ -268,7 +268,7 @@ class PendingTutorsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     model = PaeUser
     serializer_class = UserDataSerializer
     def get_queryset(self):
-        queryset = PaeUser.objects.filter(user_type = 1, status = 2).values('id', 'id__first_name', 'career', 'semester', 'id__email')
+        queryset = PaeUser.objects.filter(user_type = 1, status = 2).values('id', 'id__first_name', 'user_type', 'career', 'semester', 'id__email', 'id__password', 'id__username')
         return queryset
 
 class MostRecentSurveyForStudentsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
@@ -391,4 +391,14 @@ class ScheduleOfStudentViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         nextFriday = today + datetime.timedelta((4 - today.weekday()) % 7 + 1)
         student = self.request.query_params.get('student')
         queryset = Session.objects.filter(Q(status = 0) | Q(status = 1), id_student__id = student, date__gte = today, date__lte = nextFriday).values('date')
+        return queryset
+
+class SpecificUserViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    permission_classes = (AllowAny, )
+    authentication_classes = (TokenAuthentication, )
+    model = PaeUser
+    serializer_class = UserDataSerializer
+    def get_queryset(self):
+        user = self.request.query_params.get('user')
+        queryset = PaeUser.objects.filter(id = user).values('id', 'id__first_name', 'user_type', 'career', 'semester', 'id__email', 'id__password', 'id__username')
         return queryset

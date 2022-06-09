@@ -127,13 +127,12 @@ class SessionCardCancelValueSerializer(Serializer):
 class UserDataSerializer(Serializer):
     id = IntegerField()
     id__first_name = CharField()
+    user_type = IntegerField()
     career = CharField()
     semester = IntegerField()
     id__email = EmailField()
-
-class AdminsSerializer(Serializer):
-    id = IntegerField()
-    id__first_name = CharField()
+    id__password = CharField()
+    id__username = CharField()
 
 class SubjectsByTutorSerializer(Serializer):
     id = IntegerField()
