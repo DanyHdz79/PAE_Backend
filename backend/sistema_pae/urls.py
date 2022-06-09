@@ -1,6 +1,6 @@
 from ast import Or
 from django.urls import path
-from .views import CareersViewSet, ChoicesViewSet, SurveysViewSet, UsersViewSet, QuestionsViewSet, SubjectsViewSet, SessionsViewSet, SchedulesViewSet, AnswersViewSet, TutorSubjectsViewSet, AvailableSessionsViewSet, PaeUsersViewSet, SessionsOfSpecificStudentViewSet, SessionsOfSpecificTutorViewSet, PendingSessionsViewSet, OrderedTutorsForSessionViewSet, ServiceHoursViewSet, StudentsViewSet, TutorsViewSet, SubjectsByTutorViewSet, ScheduleByTutorViewSet, AdminsViewSet, RecentTutorsOfStudentViewSet, CurrentUserDataViewSet, PendingTutorsViewSet, MostRecentSurveyForStudentsViewSet, MostRecentSurveyForTutorsViewSet, QuestionsOfSpecificSurveyViewSet, ChoicesOfSpecificQuestionViewSet, ScheduleByTutorAndDayHourViewSet, RecentSessionsOfStudentViewSet, RecentSessionsOfTutorViewSet, SpecificSessionViewSet, RecentCompletedSessionViewSet, SessionsFilesViewSet, AdminsEmailsViewSet, ScheduleOfStudentViewSet
+from .views import CareersViewSet, ChoicesViewSet, SurveysViewSet, UsersViewSet, QuestionsViewSet, SubjectsViewSet, SessionsViewSet, SchedulesViewSet, AnswersViewSet, TutorSubjectsViewSet, AvailableSessionsViewSet, PaeUsersViewSet, SessionsOfSpecificStudentViewSet, SessionsOfSpecificTutorViewSet, PendingSessionsViewSet, OrderedTutorsForSessionViewSet, ServiceHoursViewSet, StudentsViewSet, TutorsViewSet, SubjectsByTutorViewSet, ScheduleByTutorViewSet, AdminsViewSet, RecentTutorsOfStudentViewSet, CurrentUserDataViewSet, PendingTutorsViewSet, MostRecentSurveyForStudentsViewSet, MostRecentSurveyForTutorsViewSet, QuestionsOfSpecificSurveyViewSet, ChoicesOfSpecificQuestionViewSet, ScheduleByTutorAndDayHourViewSet, RecentSessionsOfStudentViewSet, RecentSessionsOfTutorViewSet, SpecificSessionViewSet, RecentCompletedSessionViewSet, SessionsFilesViewSet, AdminsEmailsViewSet, ScheduleOfStudentViewSet, SpecificUserViewSet
 from rest_framework import routers
 
 router = routers.DefaultRouter()
@@ -43,5 +43,6 @@ router.register('specific_session', SpecificSessionViewSet, basename='specific_s
 router.register('recent_completed_session', RecentCompletedSessionViewSet, basename='recent_completed_session')
 router.register('admins_emails', AdminsEmailsViewSet, basename='admins_emails')
 router.register('schedule_of_student', ScheduleOfStudentViewSet, basename='schedule_of_student')
+router.register('specific_user', SpecificUserViewSet, basename='specific_user')
 
 urlpatterns = router.urls
