@@ -8,7 +8,7 @@ from django.contrib.auth.models import User
 from django.db.models import Count, Q, ExpressionWrapper, BooleanField, Value, CharField
 import datetime
 from .models import AnswerFile, Career, Survey, PaeUser, Question, Subject, Session, Schedule, Answer, TutorSubject, Choice
-from .serializers import AnswerFileSerializer, CareerSerializer, SessionCardSerializer, SessionCardCancelValueSerializer, SessionsFilesSerializer, SurveySerializer, UserSerializer, PaeUserSerializer, QuestionSerializer, SubjectSerializer, SessionSerializer, ScheduleSerializer, AnswerSerializer, TutorSubjectSerializer, SessionAvailabilitySerializer, OrderedTutorsForSpecificSessionSerializer, ServiceHoursSerializer, UserDataSerializer, SubjectsByTutorSerializer, ScheduleByTutorSerializer, RecentTutorsOfStudentSerializer, CurrentUserDataSerializer, ChoiceSerializer, RecentCompletedSessionSerializer, AdminsEmailsSerializer, ScheduleOfStudentSerializer, SubjectsByTutorSerializer, AnswersAboutUserSerializer
+from .serializers import AnswerFileSerializer, CareerSerializer, SessionCardSerializer, SessionCardCancelValueSerializer, SessionsFilesSerializer, SurveySerializer, UserSerializer, PaeUserSerializer, QuestionSerializer, SubjectSerializer, SessionSerializer, ScheduleSerializer, AnswerSerializer, TutorSubjectSerializer, SessionAvailabilitySerializer, OrderedTutorsForSpecificSessionSerializer, ServiceHoursSerializer, UserDataSerializer, SubjectsByTutorSerializer, RecentTutorsOfStudentSerializer, CurrentUserDataSerializer, ChoiceSerializer, RecentCompletedSessionSerializer, AdminsEmailsSerializer, ScheduleOfStudentSerializer, SubjectsByTutorSerializer, AnswersAboutUserSerializer, FindUserSerializer
 
 # SELECT * queries
 class CareersViewSet(ModelViewSet):
@@ -245,10 +245,10 @@ class ScheduleByTutorViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     permission_classes = (AllowAny, )
     authentication_classes = (TokenAuthentication, )
     model = Schedule
-    serializer_class = ScheduleByTutorSerializer
+    serializer_class = ScheduleSerializer
     def get_queryset(self):
         tutor = self.request.query_params.get('tutor')
-        queryset = Schedule.objects.filter(id_user = tutor).values('id', 'day_hour', 'available')
+        queryset = Schedule.objects.filter(id_user = tutor)
         return queryset
 
 class RecentTutorsOfStudentViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
@@ -429,4 +429,54 @@ class FilesAnswersAboutUserViewSet(mixins.ListModelMixin, viewsets.GenericViewSe
             queryset = AnswerFile.objects.filter(id_student = student)
         if tutor:
             queryset = AnswerFile.objects.filter(id_tutor = tutor)
+        return queryset
+
+class FindUserViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    permission_classes = (AllowAny, )
+    authentication_classes = (TokenAuthentication, )
+    model = PaeUser
+    serializer_class = FindUserSerializer
+    def get_queryset(self):
+        schoolID = self.request.query_params.get('schoolID')
+        if schoolID:
+            queryset = PaeUser.objects.filter(id__username = schoolID).values('id', 'id__username', 'id__email', 'id__password', 'user_type', 'semester', 'career', 'status')
+        return queryset
+
+class SubjectsByUserViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    permission_classes = (AllowAny, )
+    authentication_classes = (TokenAuthentication, )
+    model = TutorSubject
+    serializer_class = TutorSubjectSerializer
+    def get_queryset(self):
+        user = self.request.query_params.get('user')
+        if user:
+            queryset = TutorSubject.objects.filter(id_tutor = user)
+        return queryset
+
+class AnswersByUserViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    permission_classes = (AllowAny, )
+    authentication_classes = (TokenAuthentication, )
+    model = Answer
+    serializer_class = AnswerSerializer
+    def get_queryset(self):
+        student = self.request.query_params.get('student')
+        tutor = self.request.query_params.get('tutor')
+        if student:
+            queryset = Answer.objects.filter(id_student = student)
+        if tutor:
+            queryset = Answer.objects.filter(id_tutor = tutor)
+        return queryset
+
+class SessionsByUserViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    permission_classes = (AllowAny, )
+    authentication_classes = (TokenAuthentication, )
+    model = Session
+    serializer_class = SessionSerializer
+    def get_queryset(self):
+        student = self.request.query_params.get('student')
+        tutor = self.request.query_params.get('tutor')
+        if student:
+            queryset = Session.objects.filter(id_student = student)
+        if tutor:
+            queryset = Session.objects.filter(id_tutor = tutor)
         return queryset

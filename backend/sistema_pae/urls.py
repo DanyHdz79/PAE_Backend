@@ -1,6 +1,6 @@
 from ast import Or
 from django.urls import path
-from .views import AnswerFilesViewSet, CareersViewSet, ChoicesViewSet, SurveysViewSet, UsersViewSet, QuestionsViewSet, SubjectsViewSet, SessionsViewSet, SchedulesViewSet, AnswersViewSet, TutorSubjectsViewSet, AvailableSessionsViewSet, PaeUsersViewSet, SessionsOfSpecificStudentViewSet, SessionsOfSpecificTutorViewSet, PendingSessionsViewSet, OrderedTutorsForSessionViewSet, ServiceHoursViewSet, StudentsViewSet, TutorsViewSet, SubjectsByTutorViewSet, ScheduleByTutorViewSet, AdminsViewSet, RecentTutorsOfStudentViewSet, CurrentUserDataViewSet, PendingTutorsViewSet, MostRecentSurveyForStudentsViewSet, MostRecentSurveyForTutorsViewSet, QuestionsOfSpecificSurveyViewSet, ChoicesOfSpecificQuestionViewSet, ScheduleByTutorAndDayHourViewSet, RecentSessionsOfStudentViewSet, RecentSessionsOfTutorViewSet, SpecificSessionViewSet, RecentCompletedSessionViewSet, SessionsFilesViewSet, AdminsEmailsViewSet, ScheduleOfStudentViewSet, SpecificUserViewSet, AnswersAboutUserViewSet, FilesAnswersAboutUserViewSet
+from .views import AnswerFilesViewSet, CareersViewSet, ChoicesViewSet, SurveysViewSet, UsersViewSet, QuestionsViewSet, SubjectsViewSet, SessionsViewSet, SchedulesViewSet, AnswersViewSet, TutorSubjectsViewSet, AvailableSessionsViewSet, PaeUsersViewSet, SessionsOfSpecificStudentViewSet, SessionsOfSpecificTutorViewSet, PendingSessionsViewSet, OrderedTutorsForSessionViewSet, ServiceHoursViewSet, StudentsViewSet, TutorsViewSet, SubjectsByTutorViewSet, ScheduleByTutorViewSet, AdminsViewSet, RecentTutorsOfStudentViewSet, CurrentUserDataViewSet, PendingTutorsViewSet, MostRecentSurveyForStudentsViewSet, MostRecentSurveyForTutorsViewSet, QuestionsOfSpecificSurveyViewSet, ChoicesOfSpecificQuestionViewSet, ScheduleByTutorAndDayHourViewSet, RecentSessionsOfStudentViewSet, RecentSessionsOfTutorViewSet, SpecificSessionViewSet, RecentCompletedSessionViewSet, SessionsFilesViewSet, AdminsEmailsViewSet, ScheduleOfStudentViewSet, SpecificUserViewSet, AnswersAboutUserViewSet, FilesAnswersAboutUserViewSet, FindUserViewSet, SubjectsByUserViewSet, AnswersByUserViewSet, SessionsByUserViewSet
 from rest_framework import routers
 
 router = routers.DefaultRouter()
@@ -46,5 +46,9 @@ router.register('schedule_of_student', ScheduleOfStudentViewSet, basename='sched
 router.register('specific_user', SpecificUserViewSet, basename='specific_user')
 router.register('answers_about_user', AnswersAboutUserViewSet, basename='answers_about_user')
 router.register('files_answers_about_user', FilesAnswersAboutUserViewSet, basename='files_answers_about_user')
+router.register('find_user', FindUserViewSet, basename='find_user')
+router.register('subjects_by_user', SubjectsByUserViewSet, basename='subjects_by_user')
+router.register('answers_by_user', AnswersByUserViewSet, basename='answers_by_user')
+router.register('sessions_by_user', SessionsByUserViewSet, basename='sessions_by_user')
 
 urlpatterns = router.urls

@@ -139,11 +139,6 @@ class SubjectsByTutorSerializer(Serializer):
     id_subject__id = CharField()
     id_subject__name = CharField()
 
-class ScheduleByTutorSerializer(Serializer):
-    id = IntegerField()
-    day_hour = CharField()
-    available = BooleanField()
-
 class RecentTutorsOfStudentSerializer(Serializer):
     id_tutor__id__first_name = CharField()
 
@@ -166,3 +161,13 @@ class AnswersAboutUserSerializer(Serializer):
     answer = CharField()
     id_student__id__first_name = CharField()
     id_tutor__id__first_name = CharField()
+
+class FindUserSerializer(Serializer):
+    id = IntegerField()
+    id__username = CharField()
+    id__email = EmailField()
+    id__password = CharField()
+    user_type = IntegerField()
+    semester = IntegerField()
+    career = CharField()
+    status = IntegerField()
