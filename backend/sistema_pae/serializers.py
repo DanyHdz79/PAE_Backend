@@ -1,7 +1,7 @@
 from dataclasses import field
 from xmlrpc.client import DateTime
 from django.contrib.auth.models import User
-from rest_framework.serializers import Serializer, ModelSerializer, ALL_FIELDS, CharField, IntegerField, EmailField, DateTimeField, BooleanField, FileField
+from rest_framework.serializers import Serializer, ModelSerializer, ALL_FIELDS, CharField, IntegerField, EmailField, DateTimeField, BooleanField
 from .models import AnswerFile, Career, Survey, PaeUser, Question, Subject, Session, Schedule, Answer, TutorSubject, Choice
 from rest_framework.authtoken.models import Token
 
@@ -139,11 +139,6 @@ class SubjectsByTutorSerializer(Serializer):
     id_subject__id = CharField()
     id_subject__name = CharField()
 
-class ScheduleByTutorSerializer(Serializer):
-    id = IntegerField()
-    day_hour = CharField()
-    available = BooleanField()
-
 class RecentTutorsOfStudentSerializer(Serializer):
     id_tutor__id__first_name = CharField()
 
@@ -157,3 +152,22 @@ class AdminsEmailsSerializer(Serializer):
 
 class ScheduleOfStudentSerializer(Serializer):
     date = DateTimeField()
+
+class AnswersAboutUserSerializer(Serializer):
+    id_question = IntegerField()
+    id_student = IntegerField()
+    id_tutor = IntegerField()
+    date = DateTimeField()
+    answer = CharField()
+    id_student__id__first_name = CharField()
+    id_tutor__id__first_name = CharField()
+
+class FindUserSerializer(Serializer):
+    id = IntegerField()
+    id__username = CharField()
+    id__email = EmailField()
+    id__password = CharField()
+    user_type = IntegerField()
+    semester = IntegerField()
+    career = CharField()
+    status = IntegerField()
