@@ -327,6 +327,8 @@ class RecentSessionsOfStudentViewSet(mixins.ListModelMixin, viewsets.GenericView
     serializer_class = SessionCardCancelValueSerializer
     def get_queryset(self):
         today = datetime.date.today()
+        if(today.weekday() > 4):
+            today = today + datetime.timedelta(days = 2)
         previousMonday = today - datetime.timedelta(days = today.weekday())
         student = self.request.query_params.get('student')
         cancellationLimitTime = datetime.datetime.now() + datetime.timedelta(hours = 3)
@@ -340,6 +342,8 @@ class RecentSessionsOfTutorViewSet(mixins.ListModelMixin, viewsets.GenericViewSe
     serializer_class = SessionCardCancelValueSerializer
     def get_queryset(self):
         today = datetime.date.today()
+        if(today.weekday() > 4):
+            today = today + datetime.timedelta(days = 2)
         previousMonday = today - datetime.timedelta(days = today.weekday())
         tutor = self.request.query_params.get('tutor')
         cancellationLimitTime = datetime.datetime.now() + datetime.timedelta(hours = 3)
