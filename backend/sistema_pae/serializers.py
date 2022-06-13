@@ -1,0 +1,173 @@
+from dataclasses import field
+from xmlrpc.client import DateTime
+from django.contrib.auth.models import User
+from rest_framework.serializers import Serializer, ModelSerializer, ALL_FIELDS, CharField, IntegerField, EmailField, DateTimeField, BooleanField
+from .models import AnswerFile, Career, Survey, PaeUser, Question, Subject, Session, Schedule, Answer, TutorSubject, Choice
+from rest_framework.authtoken.models import Token
+
+class CareerSerializer(ModelSerializer):
+    class Meta:
+        model = Career
+        fields = ALL_FIELDS
+        
+class SurveySerializer(ModelSerializer):
+    class Meta:
+        model = Survey
+        fields = ALL_FIELDS
+
+class UserSerializer(ModelSerializer):
+    class Meta:
+        model = User
+        fields = ALL_FIELDS
+        extra_kwargs = {'password':{'required':True, 'write_only':True}}
+
+    def create(self, validated_data):
+        user = User.objects.create_user(**validated_data)
+        Token.objects.create(user=user)
+        return user
+
+class PaeUserSerializer(ModelSerializer):
+    class Meta:
+        model = PaeUser
+        fields = ALL_FIELDS
+
+class QuestionSerializer(ModelSerializer):
+    class Meta:
+        model = Question
+        fields = ALL_FIELDS
+
+class ChoiceSerializer(ModelSerializer):
+    class Meta:
+        model = Choice
+        fields = ALL_FIELDS
+
+class SubjectSerializer(ModelSerializer):
+    class Meta:
+        model = Subject
+        fields = ALL_FIELDS
+
+class TutorSubjectSerializer(ModelSerializer):
+    class Meta:
+        model = TutorSubject
+        fields = ALL_FIELDS
+        
+class SessionSerializer(ModelSerializer):
+    class Meta:
+        model = Session
+        fields = ALL_FIELDS
+
+class SessionsFilesSerializer(ModelSerializer):
+    class Meta:
+        model = Session
+        fields = ['id', 'file']
+
+class ScheduleSerializer(ModelSerializer):
+    class Meta:
+        model = Schedule
+        fields = ALL_FIELDS
+
+class AnswerSerializer(ModelSerializer):
+    class Meta:
+        model = Answer
+        fields = ALL_FIELDS
+
+class AnswerFileSerializer(ModelSerializer):
+    class Meta:
+        model = AnswerFile
+        fields = ALL_FIELDS
+
+class CurrentUserDataSerializer(Serializer):
+    id = IntegerField()
+    user_type = IntegerField()
+    status = IntegerField()
+    id__email = EmailField()
+
+class SessionAvailabilitySerializer(Serializer):
+    day_hour = CharField()       
+
+class OrderedTutorsForSpecificSessionSerializer(Serializer):
+    id_tutor__id = CharField()
+    service_hours = IntegerField()
+    id_subject = CharField()
+    id_tutor__schedule__day_hour = CharField()
+
+class ServiceHoursSerializer(Serializer):
+    id_tutor__id__first_name = CharField()
+    service_hours = IntegerField()
+
+class SessionCardSerializer(Serializer):
+    id = IntegerField()
+    id_subject__name = CharField()
+    id_tutor__id__first_name = CharField()
+    id_tutor__id__email = EmailField()
+    id_student__id__first_name = CharField()
+    id_student__id__email = EmailField()
+    date = DateTimeField()
+    spot = CharField()
+    status = IntegerField()
+    description = CharField()
+    request_time = DateTimeField()
+    file = CharField()
+
+class SessionCardCancelValueSerializer(Serializer):
+    id = IntegerField()
+    id_subject__name = CharField()
+    id_tutor__id__first_name = CharField()
+    id_tutor__id__email = EmailField()
+    id_student__id__first_name = CharField()
+    id_student__id__email = EmailField()
+    date = DateTimeField()
+    spot = CharField()
+    status = IntegerField()
+    description = CharField()
+    request_time = DateTimeField()
+    file = CharField()
+    cancel = BooleanField()
+
+class UserDataSerializer(Serializer):
+    id = IntegerField()
+    id__first_name = CharField()
+    user_type = IntegerField()
+    career = CharField()
+    semester = IntegerField()
+    id__email = EmailField()
+    id__password = CharField()
+    id__username = CharField()
+
+class SubjectsByTutorSerializer(Serializer):
+    id = IntegerField()
+    id_subject__id = CharField()
+    id_subject__name = CharField()
+
+class RecentTutorsOfStudentSerializer(Serializer):
+    id_tutor__id__first_name = CharField()
+
+class RecentCompletedSessionSerializer(Serializer):
+    id = IntegerField()
+    id_tutor = CharField()
+    id_student = CharField()
+
+class AdminsEmailsSerializer(Serializer):
+    id__email = EmailField()
+
+class ScheduleOfStudentSerializer(Serializer):
+    date = DateTimeField()
+
+class AnswersAboutUserSerializer(Serializer):
+    id_question = IntegerField()
+    id_student = IntegerField()
+    id_tutor = IntegerField()
+    date = DateTimeField()
+    answer = CharField()
+    id_student__id__first_name = CharField()
+    id_tutor__id__first_name = CharField()
+
+class FindUserSerializer(Serializer):
+    id = IntegerField()
+    id__username = CharField()
+    id__email = EmailField()
+    id__password = CharField()
+    user_type = IntegerField()
+    semester = IntegerField()
+    career = CharField()
+    status = IntegerField()
